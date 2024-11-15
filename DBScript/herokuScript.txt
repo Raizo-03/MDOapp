@@ -1,10 +1,9 @@
-mysql://rpvkuug39728axlf:n1cs1ihf9s49wrr3@jw0ch9vofhcajqg7.cbetxkdyhwsb.us-east-1.rds.amazonaws.com:3306/gsu9psuibyhst438
-
-rpvkuug39728axlf : UN
-n1cs1ihf9s49wrr3 : PASS
-jw0ch9vofhcajqg7.cbetxkdyhwsb.us-east-1.rds.amazonaws.com:3306 : HOST
+mysql://p50v5q8kcax401j3:lyaiduzz7dxlzjqj@de1tmi3t63foh7fa.cbetxkdyhwsb.us-east-1.rds.amazonaws.com:3306/c5ya28g8s0jghu3u
 
 
 
+p50v5q8kcax401j3 : UN
+lyaiduzz7dxlzjqj : PASS
+de1tmi3t63foh7fa.cbetxkdyhwsb.us-east-1.rds.amazonaws.com:3306 : HOST
 
 
