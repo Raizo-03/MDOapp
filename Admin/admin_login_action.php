@@ -1,10 +1,11 @@
 <?php
 session_start();
 
-$servername = "localhost";
-$username = "root";
-$password = ""; // XAMPP default password
-$dbname = "MDOdb";
+// Get environment variables for Heroku
+$servername = getenv('DB_HOST');
+$username = getenv('DB_USER');
+$password = getenv('DB_PASSWORD');
+$dbname = getenv('DB_NAME');
 
 // Connect to the database
 $conn = new mysqli($servername, $username, $password, $dbname);
