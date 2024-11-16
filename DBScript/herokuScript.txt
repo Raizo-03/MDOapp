@@ -1,12 +1,18 @@
 mysql://p50v5q8kcax401j3:lyaiduzz7dxlzjqj@de1tmi3t63foh7fa.cbetxkdyhwsb.us-east-1.rds.amazonaws.com:3306/c5ya28g8s0jghu3u
+<<<<<<< HEAD
 
 dbname: c5ya28g8s0jghu3u
 
 p50v5q8kcax401j3 : UN
 lyaiduzz7dxlzjqj : PASS
 de1tmi3t63foh7fa.cbetxkdyhwsb.us-east-1.rds.amazonaws.com:3306 : HOST
+=======
+>>>>>>> c0c0ec019daafc09334afce2e78abacbf17661e6
 
 
 
+p50v5q8kcax401j3 : UN
+lyaiduzz7dxlzjqj : PASS
+de1tmi3t63foh7fa.cbetxkdyhwsb.us-east-1.rds.amazonaws.com:3306 : HOST
 
 
