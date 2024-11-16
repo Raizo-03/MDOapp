@@ -19,6 +19,5 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
     <p>This is the admin dashboard.</p>
     <a href="logout.php">Logout</a>
     <a href="user_management.php">View Users</a>
-
 </body>
 </html>
