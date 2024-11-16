@@ -1,23 +1,24 @@
 <?php
+
 session_start();
 
-// Get Heroku JawsDB connection information
-$jawsdb_url = parse_url(getenv("JAWSDB_URL")); // Use the JAWSDB_URL environment variable
-$jawsdb_server = $jawsdb_url["host"];
-$jawsdb_username = $jawsdb_url["user"];
-$jawsdb_password = $jawsdb_url["pass"];
-$jawsdb_db = substr($jawsdb_url["path"], 1); // Remove the leading '/' from the path
-
-// Connect to the database
-$conn = new mysqli($jawsdb_server, $jawsdb_username, $jawsdb_password, $jawsdb_db);
-
-// Check connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
-
-// Check if the form fields are set
+// Check if username and password are set in POST
 if (isset($_POST['username']) && isset($_POST['password'])) {
+    // Get Heroku JawsDB connection information
+    $jawsdb_url = parse_url(getenv("JAWSDB_URL")); // Use the JAWSDB_URL environment variable
+    $jawsdb_server = $jawsdb_url["host"];
+    $jawsdb_username = $jawsdb_url["user"];
+    $jawsdb_password = $jawsdb_url["pass"];
+    $jawsdb_db = substr($jawsdb_url["path"], 1); // Remove the leading '/' from the path
+
+    // Connect to the database
+    $conn = new mysqli($jawsdb_server, $jawsdb_username, $jawsdb_password, $jawsdb_db);
+
+    // Check connection
+    if ($conn->connect_error) {
+        die("Connection failed: " . $conn->connect_error);
+    }
+
     // Get username and password from POST request
     $admin_username = $_POST['username'];
     $admin_password = $_POST['password'];
@@ -50,10 +51,9 @@ if (isset($_POST['username']) && isset($_POST['password'])) {
     }
 
     $stmt->close();
+    $conn->close();
 } else {
-    echo "Please enter both username and password.";
+    echo "Username and password must be provided.";
 }
-
-$conn->close();
 
 ?>
