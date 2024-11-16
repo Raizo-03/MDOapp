@@ -1,12 +1,13 @@
 <?php
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "MDOdb";  // Make sure the database name is correct
-$user_username = "";
+// Get Heroku JawsDB connection information
+$jawsdb_url = parse_url(getenv("JAWSDB_TEAL_URL")); // Use the JAWSDB_TEAL_URL environment variable
+$jawsdb_server = $jawsdb_url["host"];
+$jawsdb_username = $jawsdb_url["user"];
+$jawsdb_password = $jawsdb_url["pass"];
+$jawsdb_db = substr($jawsdb_url["path"], 1); // Remove the leading '/' from the path
 
-// Create connection
-$conn = new mysqli($servername, $username, $password, $dbname);
+// Create connection to JawsDB
+$conn = new mysqli($jawsdb_server, $jawsdb_username, $jawsdb_password, $jawsdb_db);
 
 // Check connection
 if ($conn->connect_error) {
