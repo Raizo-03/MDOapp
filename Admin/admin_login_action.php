@@ -1,3 +1,4 @@
+<?php
 session_start();
 
 // Get Heroku JawsDB connection information
@@ -54,3 +55,5 @@ if (isset($_POST['username']) && isset($_POST['password'])) {
 }
 
 $conn->close();
+
+?>
