@@ -17,7 +17,6 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Check if form is submitted and the necessary fields are present
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['username']) && isset($_POST['password'])) {
     $admin_username = $_POST['username'];
     $admin_password = $_POST['password'];
@@ -25,40 +24,36 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['username']) && isset($
     // Validate the inputs
     if (empty($admin_username) || empty($admin_password)) {
         echo "<script>alert('Username and password must be provided.');</script>";
-        exit();
-    }
-
-    // Prepare SQL query to find admin by username
-    $sql = "SELECT * FROM Admins WHERE username = ?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("s", $admin_username);
-    $stmt->execute();
-    $result = $stmt->get_result();
-
-    // Check if admin exists
-    if ($result->num_rows > 0) {
-        $admin = $result->fetch_assoc();
-
-        // Directly compare the entered password with the stored password
-        if ($admin_password === $admin['password']) {
-            // Set session variables
-            $_SESSION['admin_logged_in'] = true;
-            $_SESSION['admin_username'] = $admin['username'];
-
-            // Redirect to the admin dashboard
-            header("Location: dashboard.php");
-            exit();
-        } else {
-            echo "<script>alert('Invalid username or password.');</script>";
-        }
     } else {
-        echo "<script>alert('Admin not found.');</script>";
-    }
+        // Prepare SQL query to find admin by username
+        $sql = "SELECT * FROM Admins WHERE username = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("s", $admin_username);
+        $stmt->execute();
+        $result = $stmt->get_result();
 
-    $stmt->close();
-} else {
-    echo "<script>alert('Please provide both username and password.');</script>";
-    exit();
+        // Check if admin exists
+        if ($result->num_rows > 0) {
+            $admin = $result->fetch_assoc();
+
+            // Directly compare the entered password with the stored password
+            if ($admin_password === $admin['password']) {
+                // Set session variables
+                $_SESSION['admin_logged_in'] = true;
+                $_SESSION['admin_username'] = $admin['username'];
+
+                // Redirect to the admin dashboard
+                header("Location: dashboard.php");
+                exit();
+            } else {
+                echo "<script>alert('Invalid username or password.');</script>";
+            }
+        } else {
+            echo "<script>alert('Admin not found.');</script>";
+        }
+
+        $stmt->close();
+    }
 }
 
 // Close the database connection
