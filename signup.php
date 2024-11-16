@@ -1,9 +1,9 @@
 <?php
 // Get Heroku JawsDB connection information
-$jawsdb_url = parse_url(getenv("JAWSDB_TEAL_URL")); // Use the JAWSDB_TEAL_URL environment variable
-$jawsdb_server = $jawsdb_url["de1tmi3t63foh7fa.cbetxkdyhwsb.us-east-1.rds.amazonaws.com:3306"];
-$jawsdb_username = $jawsdb_url["p50v5q8kcax401j3"];
-$jawsdb_password = $jawsdb_url["lyaiduzz7dxlzjqj"];
+$jawsdb_url = parse_url(getenv("JAWSDB_URL")); // Use the JAWSDB_URL environment variable
+$jawsdb_server = $jawsdb_url["host"];
+$jawsdb_username = $jawsdb_url["user"];
+$jawsdb_password = $jawsdb_url["pass"];
 $jawsdb_db = substr($jawsdb_url["path"], 1); // Remove the leading '/' from the path
 
 // Create connection to JawsDB
