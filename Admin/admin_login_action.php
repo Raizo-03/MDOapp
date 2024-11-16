@@ -2,6 +2,10 @@
 
 session_start();
 
+// Debug: Check if the form is being submitted correctly
+// Uncomment this line if you want to debug the POST data
+var_dump($_POST); 
+
 // Check if username and password are set in POST
 if (isset($_POST['username']) && isset($_POST['password'])) {
     // Get Heroku JawsDB connection information
@@ -53,7 +57,9 @@ if (isset($_POST['username']) && isset($_POST['password'])) {
     $stmt->close();
     $conn->close();
 } else {
+    // In case POST data is missing
     echo "Username and password must be provided.";
+    // Optionally, print POST data to check what's coming through
+    var_dump($_POST);
 }
-
 ?>
