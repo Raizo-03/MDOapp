@@ -1,3 +1,69 @@
+<?php
+// Start the session
+session_start();
+
+// Get Heroku JawsDB connection information
+$jawsdb_url = parse_url(getenv("JAWSDB_URL"));
+$jawsdb_server = $jawsdb_url["host"];
+$jawsdb_username = $jawsdb_url["user"];
+$jawsdb_password = $jawsdb_url["pass"];
+$jawsdb_db = substr($jawsdb_url["path"], 1); // Remove the leading '/' from the path
+
+// Connect to the database
+$conn = new mysqli($jawsdb_server, $jawsdb_username, $jawsdb_password, $jawsdb_db);
+
+// Check connection
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
+// Check if form is submitted and the necessary fields are present
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['username']) && isset($_POST['password'])) {
+    $admin_username = $_POST['username'];
+    $admin_password = $_POST['password'];
+
+    // Validate the inputs
+    if (empty($admin_username) || empty($admin_password)) {
+        echo "<script>alert('Username and password must be provided.');</script>";
+        exit();
+    }
+
+    // Prepare SQL query to find admin by username
+    $sql = "SELECT * FROM Admins WHERE username = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("s", $admin_username);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    // Check if admin exists
+    if ($result->num_rows > 0) {
+        $admin = $result->fetch_assoc();
+
+        // Directly compare the entered password with the stored password
+        if ($admin_password === $admin['password']) {
+            // Set session variables
+            $_SESSION['admin_logged_in'] = true;
+            $_SESSION['admin_username'] = $admin['username'];
+
+            // Redirect to the admin dashboard
+            header("Location: dashboard.php");
+            exit();
+        } else {
+            echo "<script>alert('Invalid username or password.');</script>";
+        }
+    } else {
+        echo "<script>alert('Admin not found.');</script>";
+    }
+
+    $stmt->close();
+} else {
+    echo "<script>alert('Please provide both username and password.');</script>";
+    exit();
+}
+
+// Close the database connection
+$conn->close();
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -53,70 +119,6 @@
         <input type="password" name="password" placeholder="Password" required />
         <button type="submit">Login</button>
     </form>
-    <?php
-// Get Heroku JawsDB connection information
-$jawsdb_url = parse_url(getenv("JAWSDB_URL")); // Use the JAWSDB_URL environment variable
-$jawsdb_server = $jawsdb_url["host"];
-$jawsdb_username = $jawsdb_url["user"];
-$jawsdb_password = $jawsdb_url["pass"];
-$jawsdb_db = substr($jawsdb_url["path"], 1); // Remove the leading '/' from the path
-
-// Connect to the database
-$conn = new mysqli($jawsdb_server, $jawsdb_username, $jawsdb_password, $jawsdb_db);
-
-// Check connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
-
-// Check if 'username' and 'password' are set in the POST request
-if (isset($_POST['username']) && isset($_POST['password'])) {
-    $admin_username = $_POST['username'];
-    $admin_password = $_POST['password'];
-
-    // Validate the inputs
-    if (empty($admin_username) || empty($admin_password)) {
-        echo "Username and password must be provided.";
-        exit();
-    }
-
-    // Prepare SQL query to find admin by username
-    $sql = "SELECT * FROM Admins WHERE username = ?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("s", $admin_username);
-    $stmt->execute();
-    $result = $stmt->get_result();
-
-    // Check if admin exists
-    if ($result->num_rows > 0) {
-        $admin = $result->fetch_assoc();
-
-        // Directly compare the entered password with the stored password
-        if ($admin_password === $admin['password']) {
-            // Set session variables
-            session_start();
-            $_SESSION['admin_logged_in'] = true;
-            $_SESSION['admin_username'] = $admin['username'];
-
-            // Redirect to the admin dashboard
-            header("Location: dashboard.php");
-            exit();
-        } else {
-            echo "Invalid username or password.";
-        }
-    } else {
-        echo "Admin not found.";
-    }
-
-    $stmt->close();
-} else {
-    echo "Username or password not provided.";
-    exit();
-}
-
-// Close the database connection
-$conn->close();
-?>
 </div>
 
 </body>
