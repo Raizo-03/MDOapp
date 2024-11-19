@@ -36,8 +36,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['username']) && isset($
         if ($result->num_rows > 0) {
             $admin = $result->fetch_assoc();
 
-            // Directly compare the entered password with the stored password
-            if ($admin_password === $admin['password']) {
+            // Compare entered password with the stored hashed password
+            if (password_verify($admin_password, $admin['password'])) {
                 // Set session variables
                 $_SESSION['admin_logged_in'] = true;
                 $_SESSION['admin_username'] = $admin['username'];
@@ -55,10 +55,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['username']) && isset($
         $stmt->close();
     }
 }
-
-// Close the database connection
-$conn->close();
 ?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
