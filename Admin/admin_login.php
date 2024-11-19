@@ -70,51 +70,107 @@ $conn->close();
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #f4f4f4;
+            background-color: #111C4E;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
         }
-        .login-container {
-            max-width: 400px;
-            margin: 100px auto;
+        .container {
+            display: flex;
+            width: 80%;
+            max-width: 1200px;
+            background-color: #111C4E;
+        }
+        .logo-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
             padding: 20px;
-            background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            color: white;
         }
-        h2 {
-            text-align: center;
+        .logo-section img {
+            width: 400px;
+            height: auto;
+            margin-bottom: 20px;
         }
-        input[type="text"], input[type="password"] {
-            width: 100%;
-            padding: 10px;
+        .logo-section h3 {
             margin: 10px 0;
+        }
+        .form-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 0px;
+        }
+        .login-form {
+        width: 100%;
+        max-width: 400px;
+        color: black;
+        padding: 30px;
+        border-radius: 10px;
+        text-align: center; /* Add this to center the button */
+        }
+        .login-form input[type="text"],
+        .login-form input[type="password"] {
+            width: 75%;
+            padding: 10px;
+            margin: 10px 10px;
             border: 1px solid #ccc;
             border-radius: 4px;
         }
-        button {
-            width: 100%;
+        .login-form button {
+            width: 100px;
             padding: 10px;
-            background-color: #4CAF50;
-            color: white;
+            background-color: #fecb00;
+            color: #03194f;
+            font-weight: bold;
             border: none;
             border-radius: 4px;
             cursor: pointer;
+            margin: 20px auto; /* Adjust horizontal centering */
+            display: block; /* Ensure it's treated as a block element */
         }
-        button:hover {
-            background-color: #45a049;
+        .login-form button:hover {
+            background-color: #e2b300;
+        }
+        .forgot-password {
+            text-align: center;
+            margin-top: 10px;
+        }
+        .forgot-password a {
+            color: #ccc;
+            text-decoration: none;
+        }
+        .forgot-password a:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
 <body>
-
-<div class="login-container">
-    <h2>Admin Login</h2>
-    <!-- HTML form for login -->
-    <form method="POST" action="admin_login.php">
-        <input type="text" name="username" placeholder="Username" required />
-        <input type="password" name="password" placeholder="Password" required />
-        <button type="submit">Login</button>
-    </form>
-</div>
-
+    <div class="container">
+        <!-- Left Section -->
+        <div class="logo-section">
+            <img src="../MDO/mdo_logo.png" alt="University Logo">
+        </div>
+        <!-- Right Section -->
+        <div class="form-section">
+            <div class="login-form">
+                <form method="POST" action="admin_login.php">
+                    <input type="text" name="username" placeholder="Enter username" required>
+                    <input type="password" name="password" placeholder="Enter password" required>
+                    <button type="submit">LOG IN</button>
+                </form>
+                <div class="forgot-password">
+                    <a href="#">Forgot Password</a>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
