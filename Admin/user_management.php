@@ -26,7 +26,6 @@ if ($conn->connect_error) {
 $sql = "SELECT user_id, student_id, umak_email, first_name, last_name, created_at FROM Users";
 $result = $conn->query($sql);
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>

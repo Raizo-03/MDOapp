@@ -1,0 +1,16 @@
+{
+    "name": "ejay/mdoapp",
+    "description": "A simple PHP application",
+    "version": "1.0.0",
+ "require": {
+  "php": "^7.4 || ^8.0",
+  "phpmailer/phpmailer": "^6.5",
+  "monolog/monolog": "^2.0"
+},
+    "autoload": {
+      "psr-4": {
+        "YourNamespace\\": "src/"
+      }
+    }
+  }
+  
