@@ -6,13 +6,14 @@ use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
 header('Content-Type: application/json');
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "MDOdb"; // Replace with your database name
+$jawsdb_url = parse_url(getenv("JAWSDB_URL")); // Use the JAWSDB_URL environment variable
+$jawsdb_server = $jawsdb_url["host"];
+$jawsdb_username = $jawsdb_url["user"];
+$jawsdb_password = $jawsdb_url["pass"];
+$jawsdb_db = substr($jawsdb_url["path"], 1); // Remove the leading '/' from the path
 
-$conn = new mysqli($servername, $username, $password, $dbname);
-
+// Connect to the database
+$conn = new mysqli($jawsdb_server, $jawsdb_username, $jawsdb_password, $jawsdb_db);
 if ($conn->connect_error) {
     echo json_encode(['success' => false, 'message' => 'Database connection failed.']);
     exit;
