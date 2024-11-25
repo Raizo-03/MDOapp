@@ -67,6 +67,7 @@ if (isset($data['id']) && isset($data['action'])) {
     } elseif ($action === 'reject') {
         $sql = "DELETE FROM Bookings WHERE booking_id = ?";
         $statusMessage = 'We regret to inform you that your appointment has been rejected.';
+        $reason = "We encourage you to book another appointment. Thank you.";
     } else {
         echo json_encode(['success' => false, 'message' => 'Invalid action.']);
         exit;
@@ -101,7 +102,7 @@ if (isset($data['id']) && isset($data['action'])) {
             $mail->Subject = 'Booking Status';
             $mail->Body = "
                 Dear $firstName $lastName,<br><br>
-                $statusMessage<br><br>
+                $statusMessage<br><br>$reason
                 Service Type: $serviceType<br>
                 Booking Date: $formattedDate<br><br>
                 Regards,<br>
