@@ -30,7 +30,7 @@ if (isset($data['id']) && isset($data['action'])) {
     $query = "
         SELECT b.*, u.first_name, u.last_name, u.umak_email
         FROM Bookings b
-        JOIN users u ON b.umak_email = u.umak_email
+        JOIN Users u ON b.umak_email = u.umak_email
         WHERE b.booking_id = ?";
     
     $stmt = $conn->prepare($query);
