@@ -83,11 +83,11 @@ function sendDeletionEmail($email, $bookingID) {
         $mail->Subject = 'Booking Deletion Confirmation';
         $mail->Body = "
             <p>Dear User,</p>
-            <p>Your booking with ID <strong>$bookingID</strong> has been successfully deleted.</p>
+            <p>Your booking has been successfully deleted.</p>
             <p>If you have any questions or need further assistance, please feel free to contact us.</p>
             <p>Best regards,<br>UMAK Medical and Dental Office</p>
         ";
-        $mail->AltBody = "Dear User,\n\nYour booking with ID $bookingID has been successfully deleted.\n\nBest regards,\nUMAK Medical and Dental Office";
+        $mail->AltBody = "Dear User,\n\nYour booking has been successfully deleted.\n\nBest regards,\nUMAK Medical and Dental Office";
 
         $mail->send();
         return true;
