@@ -13,9 +13,8 @@ $conn = new mysqli($jawsdb_server, $jawsdb_username, $jawsdb_password, $jawsdb_d
 
 // Check connection
 if ($conn->connect_error) {
-    die(json_encode(['status' => 'error', 'message' => 'Database connection failed: ' . $conn->connect_error]));
+    die("Connection failed: " . $conn->connect_error);
 }
-
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Handle POST request to add a new announcement
     $title = $_POST['title'] ?? '';
