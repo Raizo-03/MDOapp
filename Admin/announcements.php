@@ -24,11 +24,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $imageUrl = $_POST['image_url'] ?? ''; // Optional image URL
 
     if (!empty($title) && !empty($details)) {
-        $stmt = $conn->prepare("INSERT INTO Announcements (title, details, image_url) VALUES (?, ?, ?)");
+        $stmt = $conn->prepare("INSERT INTO announcements (title, details, image_url) VALUES (?, ?, ?)");
         $stmt->bind_param("sss", $title, $details, $imageUrl);
 
         if ($stmt->execute()) {
-            echo json_encode(['status' => 'success', 'message' => 'Announcement added successfully!']);
+            $last_id = $conn->insert_id;  
+            echo json_encode([
+                'status' => 'success',
+                'id' => $last_id,  // Return the last inserted ID
+                'message' => 'Announcement added successfully!'
+            ]);
         } else {
             echo json_encode(['status' => 'error', 'message' => 'Failed to add announcement.']);
         }
@@ -69,8 +74,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         echo json_encode(['status' => 'error', 'message' => 'Failed to fetch announcements.']);
     }
-} else {
-    echo json_encode(['status' => 'error', 'message' => 'Invalid request method.']);
+} elseif ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
+
+    // Read the raw POST data and decode JSON
+  $data = json_decode(file_get_contents("php://input"), true); // true converts JSON to associative array
+  $id = $data['id'] ?? 0; // Get the `id` to delete
+
+  error_log("ID received for deletion: " . $id); // Write to log
+
+  if (!empty($id)) {
+      $stmt = $conn->prepare("DELETE FROM announcements WHERE id = ?");
+      $stmt->bind_param("i", $id); // Bind the `id` parameter as an integer
+
+      if ($stmt->execute() && $stmt->affected_rows > 0) {
+          echo json_encode(['status' => 'success', 'message' => 'Announcement deleted successfully!']);
+      } else {
+          echo json_encode(['status' => 'error', 'message' => 'Failed to delete announcement or announcement not found.']);
+      }
+
+      $stmt->close();
+  } else {
+      echo json_encode(['status' => 'error', 'message' => 'Invalid announcement ID.']);
+  }
+}  else {
+  echo json_encode(['status' => 'error', 'message' => 'Invalid request method.']);
 }
 
 $conn->close();

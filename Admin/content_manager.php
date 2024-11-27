@@ -621,7 +621,7 @@
         <div style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; padding: 20px;">
             <div class="announcement-container">
             <!-- Existing Announcement Card 1 -->
-            <div class="announcement-card">
+            <div class="announcement-card" data-id="1">
                 <img src="../MDO/sampleimage.jpg" alt="Announcement Image">
                 <h3>New Announcement</h3>
                 <p>This is a sample announcement text. Replace this content with actual announcement details.</p>
@@ -740,6 +740,8 @@
         });
 
     //announcement script
+
+    //announcement script
     document.addEventListener('DOMContentLoaded', async function () {
     const announcementContainer = document.querySelector('#announcements .announcement-container');
     // Get the button that opens the modal
@@ -760,7 +762,7 @@
 
     // Fetch announcements from the database on page load
     try {
-        const response = await fetch('https://umakmdo-91b845374d5b.herokuapp.com/Admin/announcements.php', { method: 'GET' });
+        const response = await fetch('http://192.168.100.4/MDOapp-main/Admin/announcement.php', { method: 'GET' });
         const announcements = await response.json();
 
        // Clear the announcements container (optional, in case of duplicates)
@@ -770,6 +772,8 @@
         announcements.forEach(announcement => {
             const card = document.createElement('div');
             card.classList.add('announcement-card');
+            
+            card.dataset.id = announcement.id;
 
             const img = document.createElement('img');
             img.src = announcement.image_url || '../MDO/sampleimage.jpg'; // Default image if none provided
@@ -784,6 +788,34 @@
             const deleteButton = document.createElement('div');
             deleteButton.classList.add('delete');
             deleteButton.textContent = 'Delete';
+
+            deleteButton.addEventListener('click', async function () {
+            const id = card.dataset.id;  // Make sure the `id` is correctly set on the element
+
+            if (confirm('Are you sure you want to delete this announcement?')) {
+                try {
+                    // Send DELETE request with ID in the body as JSON (instead of URLSearchParams)
+                    const deleteResponse = await fetch('http://192.168.100.4/MDOapp-main/Admin/announcement.php', {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json',  // Set content type to JSON
+                        },
+                        body: JSON.stringify({ id: id }),  // Send the id in JSON format
+                    });
+
+                    const result = await deleteResponse.json();
+
+                    if (result.status === 'success') {
+                        alert('Announcement deleted successfully!');
+                        card.remove(); // Remove the card from the DOM
+                    } else {
+                        alert('Failed to delete announcement: ' + result.message);
+                    }
+                } catch (error) {
+                    console.error('Error deleting announcement:', error);
+                }
+            }
+        });
 
             card.appendChild(img);
             card.appendChild(title);
@@ -806,7 +838,7 @@
 
     if (title && details) {
         try {
-            const response = await fetch('https://umakmdo-91b845374d5b.herokuapp.com/Admin/announcements.php', {
+            const response = await fetch('http://192.168.100.4/MDOapp-main/Admin/announcement.php', {
                 method: 'POST',
                 body: new URLSearchParams({ title, details, image_url: imageUrl }),
             });
@@ -814,10 +846,12 @@
             const result = await response.json();
             if (result.status === 'success') {
                 alert('Announcement added successfully!');
-
+               
                 // Dynamically add the new announcement to the page
                 const newCard = document.createElement('div');
                 newCard.classList.add('announcement-card');
+
+                newCard.dataset.id = result.id;
 
                 const newImage = document.createElement('img');
                 newImage.src = imageUrl || '../MDO/sampleimage.jpg';
@@ -832,6 +866,34 @@
                 const deleteButton = document.createElement('div');
                 deleteButton.classList.add('delete');
                 deleteButton.textContent = 'Delete';
+
+                deleteButton.addEventListener('click', async function () {
+                const id = newCard.dataset.id;  // Make sure the `id` is correctly set on the element
+
+                if (confirm('Are you sure you want to delete this announcement?')) {
+                    try {
+                        // Send DELETE request with ID in the body as JSON (instead of URLSearchParams)
+                        const deleteResponse = await fetch('http://192.168.100.4/MDOapp-main/Admin/announcement.php', {
+                            method: 'DELETE',
+                            headers: {
+                                'Content-Type': 'application/json',  // Set content type to JSON
+                            },
+                            body: JSON.stringify({ id: id }),  // Send the id in JSON format
+                        });
+
+                        const result = await deleteResponse.json();
+
+                        if (result.status === 'success') {
+                            alert('Announcement deleted successfully!');
+                            newCard.remove(); // Remove the card from the DOM
+                        } else {
+                            alert('Failed to delete announcement: ' + result.message);
+                        }
+                    } catch (error) {
+                        console.error('Error deleting announcement:', error);
+                    }
+                }
+                });
 
                 newCard.appendChild(newImage);
                 newCard.appendChild(newTitle);
@@ -856,9 +918,7 @@
     } else {
         alert('Please fill in all required fields.');
     }
-    }); 
-
-
+});
     document.addEventListener('DOMContentLoaded', async function () {
     const triviaContainer = document.querySelector('#trivia .trivia-container');
     const modal = document.getElementById('triviaModal');
