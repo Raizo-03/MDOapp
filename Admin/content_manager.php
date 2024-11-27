@@ -517,6 +517,42 @@
         background-color: #1E3A8A;
     }
 
+    .modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1000; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0, 0, 0); /* Fallback color */
+    background-color: rgba(0, 0, 0, 0.4); /* Black with opacity */
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto; /* 15% from the top and centered */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%; /* Could be more or less, depending on screen size */
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+
     
     </style>
 </head>
@@ -858,19 +894,62 @@
     }
     }); 
 
+    <div id="triviaModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <!-- Modal content dynamically added here -->
+    </div>
+</div>
+
 
     document.addEventListener('DOMContentLoaded', async function () {
     const triviaContainer = document.querySelector('#trivia .trivia-container');
     const modal = document.getElementById('triviaModal');
-    const addButton = document.querySelector('.addTrivia');
-    const closeButton = document.querySelector('#triviaModal .close');
+    const modalContent = modal.querySelector('.modal-content');
+    const closeButton = modal.querySelector('.close');
 
-    // Open modal on button click
-    addButton.addEventListener('click', function () {
+    // Open modal on card click
+    function openModal(trivia) {
+        modalContent.innerHTML = `
+            <h2>Trivia Details</h2>
+            <p><strong>ID:</strong> ${trivia.id}</p>
+            <p><strong>Question:</strong> ${trivia.title}</p>
+            <p><strong>Answer:</strong> ${trivia.details}</p>
+            <button id="deleteTrivia" data-id="${trivia.id}">Delete</button>
+        `;
         modal.style.display = 'block';
-    });
 
-    // Close modal on close button click
+        // Bind delete functionality to the delete button
+        const deleteButton = modalContent.querySelector('#deleteTrivia');
+        deleteButton.addEventListener('click', async function () {
+            const triviaId = deleteButton.dataset.id;
+
+            if (confirm('Are you sure you want to delete this trivia?')) {
+                try {
+                    const deleteResponse = await fetch('https://umakmdo-91b845374d5b.herokuapp.com/trivia.php', {
+                        method: 'DELETE',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ id: triviaId }),
+                    });
+
+                    const result = await deleteResponse.json();
+
+                    if (result.status === 'success') {
+                        alert('Trivia deleted successfully!');
+                        modal.style.display = 'none';
+                        fetchTrivia(); // Refresh trivia list
+                    } else {
+                        alert('Failed to delete trivia: ' + result.message);
+                    }
+                } catch (error) {
+                    console.error('Error during delete fetch:', error);
+                    alert('An error occurred while deleting the trivia.');
+                }
+            }
+        });
+    }
+
+    // Close modal
     closeButton.addEventListener('click', function () {
         modal.style.display = 'none';
     });
@@ -880,12 +959,11 @@
         try {
             const response = await fetch('https://umakmdo-91b845374d5b.herokuapp.com/trivia.php', { method: 'GET' });
             const triviaList = await response.json();
-            console.log(triviaList); // Log the data for debugging
 
             triviaContainer.innerHTML = ''; // Clear existing trivia
 
             triviaList.forEach(trivia => {
-                createTriviaCard(trivia);  // Create and append card for each trivia item
+                createTriviaCard(trivia); // Create and append card for each trivia item
             });
         } catch (error) {
             console.error('Error fetching trivia:', error);
@@ -896,102 +974,23 @@
     function createTriviaCard(trivia) {
         const newCard = document.createElement('div');
         newCard.classList.add('trivia-card');
-        newCard.setAttribute('data-id', trivia.id);  // Set the ID as a custom attribute
+        newCard.setAttribute('data-id', trivia.id); // Set the ID as a custom attribute
 
         const newTitle = document.createElement('h3');
         newTitle.textContent = trivia.title;
 
-        const newText = document.createElement('p');
-        newText.textContent = trivia.details;
-
-        const deleteButton = document.createElement('div');
-        deleteButton.classList.add('delete');
-        deleteButton.textContent = 'Delete';
-
-        // Bind delete function for each trivia item
-        deleteButton.addEventListener('click', async function () {
-            const triviaId = newCard.dataset.id;  // Fetch the ID using dataset
-            alert('Deleting trivia with ID:', triviaId);  // Log the ID to verify
-
-            if (!triviaId) {
-                alert('ID is missing for this trivia. Cannot delete.');
-                return;
-            }
-
-            try {
-                const deleteResponse = await fetch('https://umakmdo-91b845374d5b.herokuapp.com/delete_trivia.php', {
-                    method: 'DELETE',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ id: triviaId }),  // Send data as JSON
-                });
-
-                const result = await deleteResponse.json();
-                console.log('Delete response:', result);
-
-                if (result.status === 'success') {
-                    alert('Trivia deleted successfully!');
-                    newCard.remove();  // Remove the card from the UI
-                } else {
-                    alert('Failed to delete trivia: ' + result.message);
-                }
-            } catch (error) {
-                console.error('Error during delete fetch:', error);
-                alert('An error occurred while deleting the trivia.');
-            }
+        newCard.addEventListener('click', function () {
+            openModal(trivia);
         });
 
         newCard.appendChild(newTitle);
-        newCard.appendChild(newText);
-        newCard.appendChild(deleteButton);
         triviaContainer.appendChild(newCard);
     }
 
     // Fetch and display trivia on page load
     fetchTrivia();
-
-    // Handle form submission to add new trivia
-    document.getElementById('triviaForm').addEventListener('submit', async function (event) {
-        event.preventDefault(); // Prevent form from submitting normally
-
-        const title = document.getElementById('triviaTitle').value;
-        const text = document.getElementById('triviaText').value;
-
-        if (title && text) {
-            try {
-                console.log('Submitting trivia:', { title, text });
-                const response = await fetch('https://umakmdo-91b845374d5b.herokuapp.com/trivia.php', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: new URLSearchParams({ title: title, details: text }),
-                });
-
-                const result = await response.json();
-                console.log('Fetch result:', result);
-
-                if (result.status === 'success') {
-                    alert('Trivia added successfully!');
-
-                    // Dynamically add the trivia to the container
-                    createTriviaCard(result); // Create and append new trivia card
-
-                    // Clear the form
-                    document.getElementById('triviaForm').reset();
-
-                    // Close the modal
-                    modal.style.display = 'none';
-                } else {
-                    alert('Failed to add trivia: ' + result.message);
-                }
-            } catch (error) {
-                console.error('Error during fetch:', error);
-                alert('An error occurred. Please try again.');
-            }
-        } else {
-            alert("Please fill in both title and details.");
-        }
-    });
-
 });
+
 
         </script>
     </body>
