@@ -46,7 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($type === 'latest') {
         // Fetch the latest trivia
-        $sql = "SELECT question AS title, answer AS details FROM trivia_questions ORDER BY id DESC LIMIT 1";
+        $sql = "SELECT question AS title, answer AS details FROM Trivia ORDER BY id DESC LIMIT 1";
         $result = $conn->query($sql);
 
         if ($result && $result->num_rows > 0) {
@@ -57,7 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     } elseif ($type === 'all') {
         // Fetch all trivia
-        $sql = "SELECT question AS title, answer AS details FROM trivia_questions";
+        $sql = "SELECT question AS title, answer AS details FROM Trivia";
         $result = $conn->query($sql);
 
         if ($result && $result->num_rows > 0) {
