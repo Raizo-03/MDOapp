@@ -897,7 +897,6 @@ document.addEventListener('DOMContentLoaded', async function () {
             deleteButton.classList.add('delete');
             deleteButton.textContent = 'Delete';
 
-            // Add click event to the delete button for each card
             deleteButton.addEventListener('click', async function () {
                 const triviaId = newCard.getAttribute('data-id');  // Fetch the ID from the card
 
@@ -909,8 +908,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                 try {
                     const response = await fetch('https://umakmdo-91b845374d5b.herokuapp.com/trivia.php', {
                         method: 'DELETE',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ id: triviaId }),  // Pass the ID to delete
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                        body: new URLSearchParams({ id: triviaId }),  // Pass the ID to delete
                     });
 
                     const result = await response.json();
@@ -918,7 +917,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                     if (result.status === 'success') {
                         alert('Trivia deleted successfully!');
-                        newCard.remove(); // Remove the trivia card from the DOM after successful deletion
+                        newCard.remove();
                     } else {
                         alert('Failed to delete trivia: ' + result.message);
                     }
@@ -928,7 +927,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 }
             });
 
-            newCard.appendChild(newTitle);
+            newCard.appendChild(newTitle + triviaId);
             newCard.appendChild(newText);
             newCard.appendChild(deleteButton);
             triviaContainer.appendChild(newCard);
@@ -950,8 +949,8 @@ document.getElementById('triviaForm').addEventListener('submit', async function 
             console.log('Submitting trivia:', { title, text });
             const response = await fetch('https://umakmdo-91b845374d5b.herokuapp.com/trivia.php', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ title: title, details: text }), // Use JSON.stringify()
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: new URLSearchParams({ title: title, details: text }),
             });
 
             const result = await response.json();
@@ -974,37 +973,6 @@ document.getElementById('triviaForm').addEventListener('submit', async function 
                 const deleteButton = document.createElement('div');
                 deleteButton.classList.add('delete');
                 deleteButton.textContent = 'Delete';
-
-                // Add the delete event listener to the new delete button
-                deleteButton.addEventListener('click', async function () {
-                    const triviaId = newCard.getAttribute('data-id');
-
-                    if (!triviaId) {
-                        alert('ID is missing for this trivia. Cannot delete.');
-                        return;
-                    }
-
-                    try {
-                        const response = await fetch('https://umakmdo-91b845374d5b.herokuapp.com/trivia.php', {
-                            method: 'DELETE',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ id: triviaId }),  // Pass the ID as a JSON body
-                        });
-
-                        const result = await response.json();
-                        console.log('Delete response:', result);
-
-                        if (result.status === 'success') {
-                            alert('Trivia deleted successfully!');
-                            newCard.remove(); // Remove the trivia card from the DOM
-                        } else {
-                            alert('Failed to delete trivia: ' + result.message);
-                        }
-                    } catch (error) {
-                        console.error('Error during delete fetch:', error);
-                        alert('An error occurred while deleting the trivia.');
-                    }
-                });
 
                 newCard.appendChild(newTitle);
                 newCard.appendChild(newText);
