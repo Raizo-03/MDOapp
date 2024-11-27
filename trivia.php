@@ -77,10 +77,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 // Check if the request is a DELETE request
+// Check if the request is a DELETE request
 if ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
-    // Get the ID from the query string
-    parse_str(file_get_contents("php://input"), $_DELETE);
-    $id = $_DELETE['id'] ?? '';
+    // Get the raw POST data
+    $data = json_decode(file_get_contents("php://input"), true);
+    $id = $data['id'] ?? '';
 
     if (!empty($id)) {
         // Prepare SQL statement to delete the trivia
@@ -99,6 +100,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
         echo json_encode(['status' => 'error', 'message' => 'Invalid ID.']);
     }
 }
+
 
 // Close the database connection
 $conn->close();
