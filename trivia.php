@@ -46,29 +46,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($type === 'latest') {
         // Fetch the latest trivia
-        $sql = "SELECT question AS title, answer AS details FROM Trivia ORDER BY id DESC LIMIT 1";
-        $result = $conn->query($sql);
+// Fetch all trivia
+$sql = "SELECT id, question AS title, answer AS details FROM Trivia";
+$result = $conn->query($sql);
 
-        if ($result && $result->num_rows > 0) {
-            $latestTrivia = $result->fetch_assoc();
-            echo json_encode($latestTrivia); // Return the latest trivia as JSON
-        } else {
-            echo json_encode(['status' => 'error', 'message' => 'No trivia found.']);
-        }
+if ($result && $result->num_rows > 0) {
+    $trivia = [];
+    while ($row = $result->fetch_assoc()) {
+        $trivia[] = $row; // Include the ID in the returned data
+    }
+    echo json_encode($trivia); // Return all trivia as JSON
+} else {
+    echo json_encode([]); // Return empty array if no trivia found
+}
+
     } elseif ($type === 'all') {
         // Fetch all trivia
-        $sql = "SELECT question AS title, answer AS details FROM Trivia";
-        $result = $conn->query($sql);
+// Fetch all trivia
+$sql = "SELECT id, question AS title, answer AS details FROM Trivia";
+$result = $conn->query($sql);
 
-        if ($result && $result->num_rows > 0) {
-            $trivia = [];
-            while ($row = $result->fetch_assoc()) {
-                $trivia[] = $row;
-            }
-            echo json_encode($trivia); // Return all trivia as JSON
-        } else {
-            echo json_encode([]); // Return empty array if no trivia found
-        }
+if ($result && $result->num_rows > 0) {
+    $trivia = [];
+    while ($row = $result->fetch_assoc()) {
+        $trivia[] = $row; // Include the ID in the returned data
+    }
+    echo json_encode($trivia); // Return all trivia as JSON
+} else {
+    echo json_encode([]); // Return empty array if no trivia found
+}
+
     } else {
         echo json_encode(['status' => 'error', 'message' => 'Invalid type parameter.']);
     }
