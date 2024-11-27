@@ -760,7 +760,7 @@
 
     // Fetch announcements from the database on page load
     try {
-        const response = await fetch('https://umakmdo-91b845374d5b.herokuapp.com/Admin/announcement.php', { method: 'GET' });
+        const response = await fetch('https://umakmdo-91b845374d5b.herokuapp.com/Admin/announcements.php', { method: 'GET' });
         const announcements = await response.json();
 
        // Clear the announcements container (optional, in case of duplicates)
@@ -806,7 +806,7 @@
 
     if (title && details) {
         try {
-            const response = await fetch('https://umakmdo-91b845374d5b.herokuapp.com/Admin/announcement.php', {
+            const response = await fetch('https://umakmdo-91b845374d5b.herokuapp.com/Admin/announcements.php', {
                 method: 'POST',
                 body: new URLSearchParams({ title, details, image_url: imageUrl }),
             });
