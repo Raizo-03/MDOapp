@@ -894,13 +894,6 @@
     }
     }); 
 
-    <div id="triviaModal" class="modal">
-    <div class="modal-content">
-        <span class="close">&times;</span>
-        <!-- Modal content dynamically added here -->
-    </div>
-</div>
-
 
     document.addEventListener('DOMContentLoaded', async function () {
     const triviaContainer = document.querySelector('#trivia .trivia-container');
