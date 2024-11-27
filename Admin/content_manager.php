@@ -858,6 +858,7 @@
     }
 }); 
 
+
 document.addEventListener('DOMContentLoaded', async function () {
     const triviaContainer = document.querySelector('#trivia .trivia-container');
     const modal = document.getElementById('triviaModal');
@@ -907,12 +908,17 @@ document.addEventListener('DOMContentLoaded', async function () {
                 }
 
                 try {
+                    console.log('Sending delete request for trivia ID:', triviaId);
+
                     const response = await fetch('https://umakmdo-91b845374d5b.herokuapp.com/trivia.php', {
                         method: 'DELETE',
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                         body: new URLSearchParams({ id: triviaId }),  // Pass the ID to delete
                     });
 
                     const result = await response.json();
+                    console.log('Delete response:', result);
+
                     if (result.status === 'success') {
                         alert('Trivia deleted successfully!');
                         newCard.remove();
@@ -947,6 +953,7 @@ document.getElementById('triviaForm').addEventListener('submit', async function 
             console.log('Submitting trivia:', { title, text });
             const response = await fetch('https://umakmdo-91b845374d5b.herokuapp.com/trivia.php', {
                 method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 body: new URLSearchParams({ title: title, details: text }),
             });
 
@@ -995,6 +1002,7 @@ document.getElementById('triviaForm').addEventListener('submit', async function 
         alert("Please fill in both title and details.");
     }
 });
+
 
     </script>
 </body>
