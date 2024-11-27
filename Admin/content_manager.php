@@ -899,6 +899,8 @@ document.addEventListener('DOMContentLoaded', async function () {
 
             deleteButton.addEventListener('click', async function () {
                 const triviaId = newCard.getAttribute('data-id');  // Fetch the ID from the card
+                const triviaId = newCard.getAttribute('data-id');  // Fetch the ID from the card
+              alert('Deleting trivia with ID:', triviaId);  // Debugging line
 
                 if (!triviaId) {
                     alert('ID is missing for this trivia. Cannot delete.');
