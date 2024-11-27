@@ -15,6 +15,8 @@ $conn = new mysqli($jawsdb_server, $jawsdb_username, $jawsdb_password, $jawsdb_d
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
+
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Handle POST request to add a new announcement
     $title = $_POST['title'] ?? '';
@@ -41,10 +43,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($type === 'latest') {
         // Fetch the latest announcement (e.g., based on a timestamp or ID)
-        $sql = "SELECT title, details, image_url FROM announcements ORDER BY id DESC LIMIT 1"; // Assuming `id` is auto-incremented
+        $sql = "SELECT title, details, image_url FROM Announcements ORDER BY id DESC LIMIT 1"; // Assuming `id` is auto-incremented
     } else {
         // Fetch all announcements
-        $sql = "SELECT title, details, image_url FROM announcements";
+        $sql = "SELECT title, details, image_url FROM Announcements";
     }
 
     $result = $conn->query($sql);
