@@ -24,7 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $imageUrl = $_POST['image_url'] ?? ''; // Optional image URL
 
     if (!empty($title) && !empty($details)) {
-        $stmt = $conn->prepare("INSERT INTO announcements (title, details, image_url) VALUES (?, ?, ?)");
+        $stmt = $conn->prepare("INSERT INTO Announcements (title, details, image_url) VALUES (?, ?, ?)");
         $stmt->bind_param("sss", $title, $details, $imageUrl);
 
         if ($stmt->execute()) {
@@ -48,10 +48,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($type === 'latest') {
         // Fetch the latest announcement (e.g., based on a timestamp or ID)
-        $sql = "SELECT title, details, image_url FROM Announcements ORDER BY id DESC LIMIT 1"; // Assuming `id` is auto-incremented
+        $sql = "SELECT id, title, details, image_url FROM Announcements ORDER BY id DESC LIMIT 1"; // Assuming `id` is auto-incremented
     } else {
         // Fetch all announcements
-        $sql = "SELECT title, details, image_url FROM Announcements";
+        $sql = "SELECT id, title, details, image_url FROM Announcements";
     }
 
     $result = $conn->query($sql);
@@ -76,28 +76,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 } elseif ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
 
-    // Read the raw POST data and decode JSON
-  $data = json_decode(file_get_contents("php://input"), true); // true converts JSON to associative array
-  $id = $data['id'] ?? 0; // Get the `id` to delete
+      // Read the raw POST data and decode JSON
+    $data = json_decode(file_get_contents("php://input"), true); // true converts JSON to associative array
+    $id = $data['id'] ?? 0; // Get the `id` to delete
 
-  error_log("ID received for deletion: " . $id); // Write to log
+    error_log("ID received for deletion: " . $id); // Write to log
 
-  if (!empty($id)) {
-      $stmt = $conn->prepare("DELETE FROM announcements WHERE id = ?");
-      $stmt->bind_param("i", $id); // Bind the `id` parameter as an integer
+    if (!empty($id)) {
+        $stmt = $conn->prepare("DELETE FROM Announcements WHERE id = ?");
+        $stmt->bind_param("i", $id); // Bind the `id` parameter as an integer
 
-      if ($stmt->execute() && $stmt->affected_rows > 0) {
-          echo json_encode(['status' => 'success', 'message' => 'Announcement deleted successfully!']);
-      } else {
-          echo json_encode(['status' => 'error', 'message' => 'Failed to delete announcement or announcement not found.']);
-      }
+        if ($stmt->execute() && $stmt->affected_rows > 0) {
+            echo json_encode(['status' => 'success', 'message' => 'Announcement deleted successfully!']);
+        } else {
+            echo json_encode(['status' => 'error', 'message' => 'Failed to delete announcement or announcement not found.']);
+        }
 
-      $stmt->close();
-  } else {
-      echo json_encode(['status' => 'error', 'message' => 'Invalid announcement ID.']);
-  }
+        $stmt->close();
+    } else {
+        echo json_encode(['status' => 'error', 'message' => 'Invalid announcement ID.']);
+    }
 }  else {
-  echo json_encode(['status' => 'error', 'message' => 'Invalid request method.']);
+    echo json_encode(['status' => 'error', 'message' => 'Invalid request method.']);
 }
 
 $conn->close();

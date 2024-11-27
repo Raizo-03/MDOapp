@@ -31,7 +31,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         // Execute and check for success
         if ($stmt->execute()) {
-            echo json_encode(['status' => 'success', 'message' => 'Trivia added successfully!']);
+            $last_id = $conn->insert_id;  
+            echo json_encode(['status' => 'success','id' => $last_id, 'message' => 'Trivia added successfully!']);
         } else {
             echo json_encode(['status' => 'error', 'message' => 'Failed to add trivia.']);
         }
@@ -46,68 +47,58 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($type === 'latest') {
         // Fetch the latest trivia
-// Fetch all trivia
-$sql = "SELECT id, question AS title, answer AS details FROM Trivia";
-$result = $conn->query($sql);
+        $sql = "SELECT question AS title, answer AS details FROM Trivia ORDER BY id DESC LIMIT 1";
+        $result = $conn->query($sql);
 
-if ($result && $result->num_rows > 0) {
-    $trivia = [];
-    while ($row = $result->fetch_assoc()) {
-        $trivia[] = $row; // Include the ID in the returned data
-    }
-    echo json_encode($trivia); // Return all trivia as JSON
-} else {
-    echo json_encode([]); // Return empty array if no trivia found
-}
-
+        if ($result && $result->num_rows > 0) {
+            $latestTrivia = $result->fetch_assoc();
+            echo json_encode($latestTrivia); // Return the latest trivia as JSON
+        } else {
+            echo json_encode(['status' => 'error', 'message' => 'No trivia found.']);
+        }
     } elseif ($type === 'all') {
         // Fetch all trivia
-// Fetch all trivia
-$sql = "SELECT id, question AS title, answer AS details FROM Trivia";
-$result = $conn->query($sql);
+        $sql = "SELECT id, question AS title, answer AS details FROM Trivia";
+        $result = $conn->query($sql);
 
-if ($result && $result->num_rows > 0) {
-    $trivia = [];
-    while ($row = $result->fetch_assoc()) {
-        $trivia[] = $row; // Include the ID in the returned data
-    }
-    echo json_encode($trivia); // Return all trivia as JSON
-} else {
-    echo json_encode([]); // Return empty array if no trivia found
-}
-
+        if ($result && $result->num_rows > 0) {
+            $trivia = [];
+            while ($row = $result->fetch_assoc()) {
+                $trivia[] = $row;
+            }
+            echo json_encode($trivia); // Return all trivia as JSON
+        } else {
+            echo json_encode([]); // Return empty array if no trivia found
+        }
     } else {
         echo json_encode(['status' => 'error', 'message' => 'Invalid type parameter.']);
     }
+} elseif ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
+
+    // Read the raw POST data and decode JSON
+  $data = json_decode(file_get_contents("php://input"), true); // true converts JSON to associative array
+  $id = $data['id'] ?? 0; // Get the `id` to delete
+
+  error_log("ID received for deletion: " . $id); // Write to log
+
+  if (!empty($id)) {
+      $stmt = $conn->prepare("DELETE FROM Trivia WHERE id = ?");
+      $stmt->bind_param("i", $id); // Bind the `id` parameter as an integer
+
+      if ($stmt->execute() && $stmt->affected_rows > 0) {
+          echo json_encode(['status' => 'success', 'message' => 'trivia deleted successfully!']);
+      } else {
+            error_log('Delete failed. Affected rows: ' . $stmt->affected_rows);
+          echo json_encode(['status' => 'error', 'message' => 'Failed to delete trivia or trivia not found.']);
+      }
+
+      $stmt->close();
+  } else {
+      echo json_encode(['status' => 'error', 'message' => 'Invalid trivia ID.']);
+  }
 } else {
     echo json_encode(['status' => 'error', 'message' => 'Invalid request method.']);
 }
-
-// Check if the request is a DELETE request
-if ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
-    // Get the raw POST data
-    $data = json_decode(file_get_contents("php://input"), true);
-    $id = $data['id'] ?? ''; // Get the 'id' from the JSON body
-
-    if (!empty($id)) {
-        // Prepare SQL statement to delete the trivia
-        $stmt = $conn->prepare("DELETE FROM Trivia WHERE id = ?");
-        $stmt->bind_param("i", $id);
-
-        // Execute and check for success
-        if ($stmt->execute()) {
-            echo json_encode(['status' => 'success', 'message' => 'Trivia deleted successfully!']);
-        } else {
-            echo json_encode(['status' => 'error', 'message' => 'Failed to delete trivia.']);
-        }
-
-        $stmt->close(); // Close the prepared statement
-    } else {
-        echo json_encode(['status' => 'error', 'message' => 'Invalid ID.']);
-    }
-}
-
-
 
 // Close the database connection
 $conn->close();
