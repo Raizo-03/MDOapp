@@ -927,7 +927,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 }
             });
 
-            newCard.appendChild(newTitle + triviaId);
+            newCard.appendChild(newTitle);
             newCard.appendChild(newText);
             newCard.appendChild(deleteButton);
             triviaContainer.appendChild(newCard);
