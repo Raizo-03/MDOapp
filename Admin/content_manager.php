@@ -909,8 +909,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                 try {
                     const response = await fetch('https://umakmdo-91b845374d5b.herokuapp.com/trivia.php', {
                         method: 'DELETE',
-                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                        body: new URLSearchParams({ id: triviaId }),  // Pass the ID to delete
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ id: triviaId }),  // Pass the ID to delete
                     });
 
                     const result = await response.json();
