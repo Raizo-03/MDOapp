@@ -856,8 +856,9 @@
     } else {
         alert('Please fill in all required fields.');
     }
-});    <script>
-        document.addEventListener('DOMContentLoaded', async function () {
+});  
+        
+document.addEventListener('DOMContentLoaded', async function () {
             const triviaContainer = document.querySelector('#trivia .trivia-container');
             const modal = document.getElementById('triviaModal');
             const addButton = document.querySelector('.addTrivia');
