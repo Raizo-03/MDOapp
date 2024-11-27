@@ -903,7 +903,7 @@
 
             deleteButton.addEventListener('click', async function () {
                 const triviaId = newCard.dataset.id;  // Fetch the ID using dataset
-                console.log('Deleting trivia with ID:', triviaId);  // Log the ID to verify
+                alert('Deleting trivia with ID:', triviaId);  // Log the ID to verify
 
                 if (!triviaId) {
                     alert('ID is missing for this trivia. Cannot delete.');
@@ -983,7 +983,7 @@ document.getElementById('triviaForm').addEventListener('submit', async function 
 
                 deleteButton.addEventListener('click', async function () {
                     const triviaId = newCard.dataset.id;  // Fetch the ID using dataset
-                    console.log('Deleting trivia with ID:', triviaId);  // Log the ID to verify
+                    alert('Deleting trivia with ID:', triviaId);  // Log the ID to verify
 
                     if (!triviaId) {
                         alert('ID is missing for this trivia. Cannot delete.');
