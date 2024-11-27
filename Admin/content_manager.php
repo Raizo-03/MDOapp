@@ -988,7 +988,7 @@ document.getElementById('triviaForm').addEventListener('submit', async function 
                         const response = await fetch('https://umakmdo-91b845374d5b.herokuapp.com/trivia.php', {
                             method: 'DELETE',
                             headers: { 'Content-Type': 'application/json' },
-                            body: new URLSearchParams({ id: triviaId }),
+                            body: JSON.stringify({ id: triviaId }),  // Pass the ID as a JSON body
                         });
 
                         const result = await response.json();
