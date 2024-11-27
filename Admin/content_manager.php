@@ -950,7 +950,7 @@ document.getElementById('triviaForm').addEventListener('submit', async function 
             console.log('Submitting trivia:', { title, text });
             const response = await fetch('https://umakmdo-91b845374d5b.herokuapp.com/trivia.php', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                headers: { 'Content-Type': 'application/json' },
                 body: new URLSearchParams({ title: title, details: text }),
             });
 
