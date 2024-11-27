@@ -76,6 +76,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     echo json_encode(['status' => 'error', 'message' => 'Invalid request method.']);
 }
 
+// Check if the request is a DELETE request
+if ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
+    // Get the ID from the query string
+    parse_str(file_get_contents("php://input"), $_DELETE);
+    $id = $_DELETE['id'] ?? '';
+
+    if (!empty($id)) {
+        // Prepare SQL statement to delete the trivia
+        $stmt = $conn->prepare("DELETE FROM Trivia WHERE id = ?");
+        $stmt->bind_param("i", $id);
+
+        // Execute and check for success
+        if ($stmt->execute()) {
+            echo json_encode(['status' => 'success', 'message' => 'Trivia deleted successfully!']);
+        } else {
+            echo json_encode(['status' => 'error', 'message' => 'Failed to delete trivia.']);
+        }
+
+        $stmt->close(); // Close the prepared statement
+    } else {
+        echo json_encode(['status' => 'error', 'message' => 'Invalid ID.']);
+    }
+}
+
 // Close the database connection
 $conn->close();
 ?>

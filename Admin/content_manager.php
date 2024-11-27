@@ -876,15 +876,13 @@
         closeButton.addEventListener('click', function () {
         modal.style.display = 'none';
     });
-    // Fetch trivia from the database on page load
+
     try {
         const response = await fetch('https://umakmdo-91b845374d5b.herokuapp.com/trivia.php', { method: 'GET' });
         const triviaList = await response.json();
 
-        // Clear the trivia container (optional, in case of duplicates)
-        triviaContainer.innerHTML = '';
+        triviaContainer.innerHTML = ''; // Clear the trivia container
 
-        // Populate trivia container with data from the database
         triviaList.forEach(trivia => {
             const newCard = document.createElement('div');
             newCard.classList.add('trivia-card');
@@ -898,17 +896,37 @@
             const deleteButton = document.createElement('div');
             deleteButton.classList.add('delete');
             deleteButton.textContent = 'Delete';
+            deleteButton.addEventListener('click', async function () {
+                // Send a DELETE request when the delete button is clicked
+                try {
+                    const response = await fetch('https://umakmdo-91b845374d5b.herokuapp.com/trivia.php', {
+                        method: 'DELETE',
+                        body: new URLSearchParams({ id: trivia.id }),
+                    });
+
+                    const result = await response.json();
+                    if (result.status === 'success') {
+                        alert('Trivia deleted successfully!');
+                        // Remove the deleted trivia from the UI
+                        newCard.remove();
+                    } else {
+                        alert('Failed to delete trivia: ' + result.message);
+                    }
+                } catch (error) {
+                    console.error('Error during delete fetch:', error);
+                    alert('An error occurred while deleting the trivia.');
+                }
+            });
 
             newCard.appendChild(newTitle);
             newCard.appendChild(newText);
             newCard.appendChild(deleteButton);
-
             triviaContainer.appendChild(newCard);
         });
     } catch (error) {
         console.error('Error fetching trivia:', error);
     }
-    });
+});
 
     // Handle form submission to add new trivia
     document.getElementById('triviaForm').addEventListener('submit', async function (event) {
