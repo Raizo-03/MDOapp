@@ -571,23 +571,22 @@
 
     <!-- Tab Content -->
     <div id="chat" class="tab-content active">
-        <div class="chat-container">
-            <div class="chat-list">
-                <div class="chat-list-item active" data-chat="sasa">Sasa Jean</div>
-                <div class="chat-list-item" data-chat="luke">Luke Alpine</div>
+    <div class="chat-container">
+        <div class="chat-list" id="chatList">
+            <!-- Dynamically generated chat list items will go here -->
+        </div>
+        <div class="chat-box-container">
+            <div class="chat-box" id="chatBox">
+                <!-- Default chat content will be loaded here -->
+                <div class="message received">Hello! How are you?</div>
+                <div class="message sent">I’m doing fine. How about you?</div>
             </div>
-            <div class="chat-box-container">
-                <div class="chat-box" id="chatBox">
-                    <!-- Default chat content for Sasa Jean -->
-                    <div class="message received">Hello! How are you?</div>
-                    <div class="message sent">I’m doing fine. How about you?</div>
-                </div>
-                <div class="message-box">
-                    <input type="text" placeholder="Type your message..." id="messageInput">
-                    <button id="sendMessage">Send</button>
-                </div>
+            <div class="message-box">
+                <input type="text" placeholder="Type your message..." id="messageInput">
+                <button id="sendMessage">Send</button>
             </div>
         </div>
+    </div>
     </div>
 
     <div id="feedback" class="tab-content">
