@@ -53,3 +53,11 @@ CREATE TABLE IF NOT EXISTS Bookings (
     FOREIGN KEY (umak_email) REFERENCES Users(umak_email) -- Establish relationship with Users table
 );
 
+CREATE TABLE IF NOT EXISTS Messages (
+    message_id INT AUTO_INCREMENT PRIMARY KEY,
+    sender_email VARCHAR(100) NOT NULL,
+    receiver_email VARCHAR(100) NOT NULL,
+    message TEXT NOT NULL,
+    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    status ENUM('unread', 'read') DEFAULT 'unread' NOT NULL
+);

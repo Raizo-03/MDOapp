@@ -518,6 +518,20 @@
         background-color: #1E3A8A;
     }
 
+    .user-name {
+    flex-grow: 1; /* Makes the name take available space */
+}
+
+.unread-count {
+    background-color: red;
+    color: white;
+    border-radius: 50%;
+    padding: 5px 10px;
+    margin-left: 10px; /* Adds space between name and badge */
+    font-size: 12px;
+    display: none; /* Ensure it's hidden by default */
+}
+
     
     </style>
 </head>
@@ -705,40 +719,211 @@
             });
         });
 
-        // Chat sending logic
-        const chatHeads = document.querySelectorAll('.chat-list-item');
-        const chatBox = document.getElementById('chatBox');
-        const messageInput = document.getElementById('messageInput');
-        const sendMessage = document.getElementById('sendMessage');
+        loadUserList();
 
-        const chatContent = {
-            sasa: `
-                <div class="message received">Hello! How are you?</div>
-                <div class="message sent">I’m doing fine. How about you?</div>
-            `,
-            luke: `
-                <div class="message received">Hi, any updates?</div>
-                <div class="message sent">Yes, I’ll send them over shortly.</div>
-            `
-        };
+// Send message logic
+document.getElementById("sendMessage").addEventListener("click", function () {
+    const messageInput = document.getElementById("messageInput");
+    const messageText = messageInput.value.trim();
+    if (messageText && document.querySelector(".chat-list-item.active")) {
+        const userEmail = document.querySelector(".chat-list-item.active").getAttribute("data-chat");
+        sendMessageToUser(userEmail, messageText);
+    } else {
+        alert("Please select a user and enter a message.");
+    }
+});
 
-        chatHeads.forEach(chatHead => {
-            chatHead.addEventListener('click', () => {
-                chatHeads.forEach(ch => ch.classList.remove('active'));
-                chatHead.classList.add('active');
-                const chatId = chatHead.getAttribute('data-chat');
-                chatBox.innerHTML = chatContent[chatId];
-            });
-        });
+// Listen for Enter key to send messages
+document.getElementById("messageInput").addEventListener("keypress", function (event) {
+    if (event.key === "Enter") {
+        document.getElementById("sendMessage").click();
+    }
+});
 
-        sendMessage.addEventListener('click', () => {
-            const message = messageInput.value.trim();
-            if (message) {
-                chatBox.innerHTML += `<div class="message sent">${message}</div>`;
-                messageInput.value = '';
-                chatBox.scrollTop = chatBox.scrollHeight;
+// Get unread message count
+function getUnreadMessages(userEmail) {
+    return fetch(`https://umakmdo-91b845374d5b.herokuapp.com/Admin/getUnreadMessages.php?email=${encodeURIComponent(userEmail)}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("Failed to load unread message count.");
             }
+            return response.json();
+        })
+        .then(data => {
+            if (data.unread_count !== undefined) {
+                return data.unread_count;
+            } else {
+                throw new Error("Unread count not available.");
+            }
+        })
+        .catch(error => {
+            console.error("Error fetching unread messages:", error);
+            return 0; // Return 0 if there's an error
         });
+}
+
+async function loadUserList() {
+    try {
+        const response = await fetch("https://umakmdo-91b845374d5b.herokuapp.com/Admin/get_users.php");
+        if (!response.ok) {
+            throw new Error("Failed to load users. Status: " + response.status);
+        }
+        const data = await response.json();
+        
+        const chatListDiv = document.getElementById("chatList");
+        chatListDiv.innerHTML = "";
+        if (data.length === 0) {
+            chatListDiv.innerHTML = "<div>No users available.</div>";
+        }
+
+        for (const user of data) {
+            const userElement = document.createElement("div");
+            userElement.classList.add("chat-list-item");
+            userElement.setAttribute("data-chat", user.umak_email);
+
+            const userNameContainer = document.createElement("div");
+            userNameContainer.classList.add("user-name-container");
+
+            const userName = document.createElement("span");
+            userName.classList.add("user-name");
+            userName.textContent = user.first_name + ' ' + user.last_name;
+
+            const unreadCountDiv = document.createElement("span");
+            unreadCountDiv.classList.add("unread-count");
+            unreadCountDiv.textContent = "0"; // Default unread count
+            unreadCountDiv.style.display = "none"; // Hide by default
+
+            userNameContainer.appendChild(userName);
+            userNameContainer.appendChild(unreadCountDiv);
+
+            userElement.appendChild(userNameContainer);
+            chatListDiv.appendChild(userElement);
+
+            userElement.addEventListener("click", () => {
+                document.querySelectorAll(".chat-list-item").forEach(u => u.classList.remove("active"));
+                userElement.classList.add("active");
+                loadMessages(user.umak_email, userElement);
+                markMessagesAsRead(user.umak_email, userElement);
+            });
+
+            const unreadMessages = await getUnreadMessages(user.umak_email);
+            if (unreadMessages > 0) {
+                unreadCountDiv.textContent = unreadMessages;
+                unreadCountDiv.style.display = "inline-block"; // Show badge
+            }
+        }
+    } catch (error) {
+        console.error("Error loading user list:", error);
+        alert("Error loading user list: " + error.message);
+    }
+}
+
+function loadMessages(userEmail, userElement) {
+    console.log("Loading messages for user:", userEmail);
+
+    fetch("https://umakmdo-91b845374d5b.herokuapp.com/Admin/get_messages.php?user_email=" + encodeURIComponent(userEmail))
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`Failed to load messages. Status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            const chatBox = document.getElementById("chatBox");
+
+            chatBox.innerHTML = ""; // Clear the chat box
+
+            let unreadCount = 0;
+
+            if (!Array.isArray(data) || data.length === 0) {
+                const noMessageDiv = document.createElement("div");
+                noMessageDiv.classList.add("no-messages");
+                noMessageDiv.textContent = "No messages yet.";
+                chatBox.appendChild(noMessageDiv);
+            } else {
+                data.forEach(message => {
+                    const messageDiv = document.createElement("div");
+
+                    const messageContentDiv = document.createElement("div");
+                    messageContentDiv.classList.add("message-content");
+                    messageContentDiv.textContent = message.message;
+
+                    if (message.receiver_email === userEmail && message.status === "unread") {
+                        unreadCount++;
+                    }
+
+                    if (message.sender_email === userEmail) {
+                        messageDiv.classList.add("message", "received");
+                    } else if (message.receiver_email === userEmail) {
+                        messageDiv.classList.add("message", "sent");
+                    }
+
+                    messageDiv.appendChild(messageContentDiv);
+                    chatBox.appendChild(messageDiv);
+                });
+            }
+
+            const unreadCountDiv = userElement.querySelector(".unread-count");
+
+            if (unreadCount === 0) {
+                unreadCountDiv.style.display = "none";  // Hide the badge
+            } else {
+                unreadCountDiv.style.display = "inline-block";
+                unreadCountDiv.textContent = unreadCount; // Update unread count
+            }
+        })
+        .catch(error => {
+            console.error("Error loading messages:", error);
+        });
+}
+
+function sendMessageToUser(userEmail, messageText) {
+    fetch("https://umakmdo-91b845374d5b.herokuapp.com/Admin/send_message.php", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            sender_email: "admin2@example.com", // Replace with dynamic sender email
+            receiver_email: userEmail,
+            message: messageText
+        })
+    })
+    .then(response => {
+        if (response.ok) {
+            console.log("Message sent successfully");
+            loadMessages(userEmail);
+        } else {
+            throw new Error("Failed to send message.");
+        }
+    })
+    .catch(error => {
+        console.error("Error sending message:", error);
+    });
+}
+
+function markMessagesAsRead(userEmail, userElement) {
+    fetch("https://umakmdo-91b845374d5b.herokuapp.com/Admin/mark_messages_read.php?user_email=" + encodeURIComponent(userEmail))
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`Failed to mark messages as read. Status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                updateChatUIToShowMessagesAsRead(userElement);
+            }
+        })
+        .catch(error => {
+            console.error("Error marking messages as read:", error);
+        });
+}
+
+function updateChatUIToShowMessagesAsRead(userElement) {
+    const unreadCountDiv = userElement.querySelector(".unread-count");
+    unreadCountDiv.style.display = "none";  // Hide unread count
+}
 
     //announcement script
     document.addEventListener('DOMContentLoaded', async function () {
