@@ -16,7 +16,7 @@ if (!$conn) {
 // Using prepared statements to prevent SQL injection
 $query =  "SELECT DISTINCT u.umak_email, u.first_name, u.last_name 
            FROM Messages m
-           JOIN users u ON m.sender_email = u.umak_email
+           JOIN Users u ON m.sender_email = u.umak_email
            WHERE m.receiver_email = 'admin2@example.com'";
 
 // Prepare and execute the query
