@@ -17,7 +17,7 @@ if (isset($_GET['email'])) {
     $email = $_GET['email'];
 
     // Query to count unread messages for the user
-    $query = "SELECT COUNT(*) AS unread_count FROM messages WHERE sender_email = ? AND status = 'unread'";
+    $query = "SELECT COUNT(*) AS unread_count FROM Messages WHERE sender_email = ? AND status = 'unread'";
     $stmt = $conn->prepare($query);
     $stmt->bind_param("s", $email);
     $stmt->execute();
