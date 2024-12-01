@@ -947,7 +947,7 @@ function sendMessageToUser(userEmail, messageText) {
     chatBox.scrollTop = chatBox.scrollHeight;
 
     // Send the message to the server
-    fetch("https://umakmdo-91b845374d5b.herokuapp.com/Admin/Admin/send_message.php", {
+    fetch("https://umakmdo-91b845374d5b.herokuapp.com/Admin/send_message.php", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
