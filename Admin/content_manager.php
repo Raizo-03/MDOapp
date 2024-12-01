@@ -589,6 +589,7 @@
     </div>
     </div>
 
+
     <div id="feedback" class="tab-content">
     <div style="padding: 20px; text-align: center; height: 100%;">
         <div class="feedback-card">
@@ -702,41 +703,42 @@
         </div>
 
     <script>
-        // Tab switching logic
-        const tabs = document.querySelectorAll('.tab');
-        const contents = document.querySelectorAll('.tab-content');
+document.addEventListener('DOMContentLoaded', () => {
+    // Tab switching logic
+    const tabs = document.querySelectorAll('.tab');
+    const contents = document.querySelectorAll('.tab-content');
 
-        tabs.forEach(tab => {
-            tab.addEventListener('click', () => {
-                // Remove active class from all tabs and hide all contents
-                tabs.forEach(t => t.classList.remove('active'));
-                contents.forEach(c => c.classList.remove('active'));
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            tabs.forEach(t => t.classList.remove('active'));
+            contents.forEach(c => c.classList.remove('active'));
 
-                // Add active class to the clicked tab and show its content
-                tab.classList.add('active');
-                document.getElementById(tab.dataset.tab).classList.add('active');
-            });
+            tab.classList.add('active');
+            document.getElementById(tab.dataset.tab).classList.add('active');
         });
+    });
 
-        loadUserList();
+    // Load users and chat messages
+    loadUserList();
 
-// Send message logic
-document.getElementById("sendMessage").addEventListener("click", function () {
-    const messageInput = document.getElementById("messageInput");
-    const messageText = messageInput.value.trim();
-    if (messageText && document.querySelector(".chat-list-item.active")) {
-        const userEmail = document.querySelector(".chat-list-item.active").getAttribute("data-chat");
-        sendMessageToUser(userEmail, messageText);
-    } else {
-        alert("Please select a user and enter a message.");
-    }
-});
+    // Send message logic
+    document.getElementById("sendMessage").addEventListener("click", function () {
+        const messageInput = document.getElementById("messageInput");
+        const messageText = messageInput.value.trim();
+        if (messageText && document.querySelector(".chat-list-item.active")) {
+            const userEmail = document.querySelector(".chat-list-item.active").getAttribute("data-chat");
+            sendMessageToUser(userEmail, messageText);
+        } else {
+            alert("Please select a user and enter a message.");
+        }
+    });
 
-// Listen for Enter key to send messages
-document.getElementById("messageInput").addEventListener("keypress", function (event) {
-    if (event.key === "Enter") {
-        document.getElementById("sendMessage").click();
-    }
+    // Listen for Enter key to send messages
+    document.getElementById("messageInput").addEventListener("keypress", function (event) {
+        if (event.key === "Enter") {
+            document.getElementById("sendMessage").click();
+        }
+    });
 });
 
 // Get unread message count
