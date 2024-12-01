@@ -7,7 +7,7 @@
     <title>Content Manager</title>
     <link rel="icon" type="image/x-icon" href="../MDO/mdo_logo_circle.png">
     <style>
-        
+
   body {
             font-family: Arial, sans-serif;
             margin: 0;
@@ -540,27 +540,6 @@
         <div class="tab" data-tab="trivia">Trivia</div>
     </div>
 
-    <!-- Tab Content -->
-    <div id="chat" class="tab-content active">
-    <div class="chat-container">
-        <div class="chat-list" id="chatList">
-            <!-- Dynamically generated chat list items will go here -->
-        </div>
-        <div class="chat-box-container">
-            <div class="chat-box" id="chatBox">
-                <!-- Default chat content will be loaded here -->
-                <div class="message received">Hello! How are you?</div>
-                <div class="message sent">I’m doing fine. How about you?</div>
-            </div>
-            <div class="message-box">
-                <input type="text" placeholder="Type your message..." id="messageInput">
-                <button id="sendMessage">Send</button>
-            </div>
-        </div>
-    </div>
-    </div>
-
-
     <div id="feedback" class="tab-content">
     <div style="padding: 20px; text-align: center; height: 100%;">
         <div class="feedback-card">
@@ -673,7 +652,26 @@
             </div>
         </div>
 
-    <script>
+        <div id="chat" class="tab-content active">
+    <div class="chat-container">
+        <div class="chat-list" id="chatList">
+            <!-- Dynamically generated chat list items will go here -->
+        </div>
+        <div class="chat-box-container">
+            <div class="chat-box" id="chatBox">
+                <!-- Default chat content will be loaded here -->
+                <div class="message received">Hello! How are you?</div>
+                <div class="message sent">I’m doing fine. How about you?</div>
+            </div>
+            <div class="message-box">
+                <input type="text" placeholder="Type your message..." id="messageInput">
+                <button id="sendMessage">Send</button>
+            </div>
+        </div>
+    </div>
+    </div>
+    
+<script>
 document.addEventListener('DOMContentLoaded', () => {
     // Tab switching logic
     const tabs = document.querySelectorAll('.tab');
@@ -946,7 +944,6 @@ function sendMessageToUser(userEmail, messageText) {
             console.error("Error sending message:", error);
         });
 }
-
     //announcement script
     document.addEventListener('DOMContentLoaded', async function () {
     const announcementContainer = document.querySelector('#announcements .announcement-container');
