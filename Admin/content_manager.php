@@ -7,8 +7,8 @@
     <title>Content Manager</title>
     <link rel="icon" type="image/x-icon" href="../MDO/mdo_logo_circle.png">
     <style>
-    /* General Styles */
-        body {
+        
+  body {
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
@@ -123,7 +123,7 @@
         }
 
         .chat-list-item {
-            background-color: white;
+            background-color: #f0f0f0;
             padding: 10px;
             margin-bottom: 10px;
             border-radius: 5px;
@@ -241,42 +241,15 @@
             color: #333;
             line-height: 1.5;
         }
-       
+
         /* Announcement Section */
-        .announcement-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-            padding: 20px;
-            justify-content: center;
-            align-items: flex-start;
-        }
         .announcement-card {
-            position: relative;
             background-color: white;
             border-radius: 10px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             width: 300px; /* Adjust the size of the card */
             padding: 15px;
             text-align: left;
-        }
-        .delete {
-            position: absolute; /* Position the button inside the card */
-            bottom: 10px; /* Place it at the bottom of the card */
-            right: 10px; /* Align it to the right */
-            background-color: #F87171;
-            color: white;
-            padding: 5px 10px;
-            font-size: 12px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            transition: background-color 0.3s ease;
-        }
-
-        .delete:hover {
-            background-color: #EF4444;
         }
 
         .announcement-card img {
@@ -327,7 +300,6 @@
         .addAnnouncement:hover {
             background-color: #1E3A8A;
         }
-        
         /* Announcement Modal styles */
         .announcement-modal {
             display: none; /* Hidden by default */
@@ -517,7 +489,7 @@
     button[type="submit"]:hover {
         background-color: #1E3A8A;
     }
-
+    
     .user-name {
     flex-grow: 1; /* Makes the name take available space */
 }
@@ -531,7 +503,6 @@
     font-size: 12px;
     display: none; /* Ensure it's hidden by default */
 }
-
     
     </style>
 </head>
