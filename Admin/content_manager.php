@@ -7,8 +7,8 @@
     <title>Content Manager</title>
     <link rel="icon" type="image/x-icon" href="../MDO/mdo_logo_circle.png">
     <style>
-
-  body {
+    /* General Styles */
+        body {
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
@@ -123,7 +123,7 @@
         }
 
         .chat-list-item {
-            background-color: #f0f0f0;
+            background-color: white;
             padding: 10px;
             margin-bottom: 10px;
             border-radius: 5px;
@@ -241,15 +241,42 @@
             color: #333;
             line-height: 1.5;
         }
-
+       
         /* Announcement Section */
+        .announcement-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            padding: 20px;
+            justify-content: center;
+            align-items: flex-start;
+        }
         .announcement-card {
+            position: relative;
             background-color: white;
             border-radius: 10px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             width: 300px; /* Adjust the size of the card */
             padding: 15px;
             text-align: left;
+        }
+        .delete {
+            position: absolute; /* Position the button inside the card */
+            bottom: 10px; /* Place it at the bottom of the card */
+            right: 10px; /* Align it to the right */
+            background-color: #F87171;
+            color: white;
+            padding: 5px 10px;
+            font-size: 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease;
+        }
+
+        .delete:hover {
+            background-color: #EF4444;
         }
 
         .announcement-card img {
@@ -300,6 +327,7 @@
         .addAnnouncement:hover {
             background-color: #1E3A8A;
         }
+        
         /* Announcement Modal styles */
         .announcement-modal {
             display: none; /* Hidden by default */
@@ -489,7 +517,7 @@
     button[type="submit"]:hover {
         background-color: #1E3A8A;
     }
-    
+
     .user-name {
     flex-grow: 1; /* Makes the name take available space */
 }
@@ -503,6 +531,7 @@
     font-size: 12px;
     display: none; /* Ensure it's hidden by default */
 }
+
     
     </style>
 </head>
@@ -538,6 +567,26 @@
         <div class="tab" data-tab="feedback">Feedback</div>
         <div class="tab" data-tab="announcements">Announcements</div>
         <div class="tab" data-tab="trivia">Trivia</div>
+    </div>
+
+    <!-- Tab Content -->
+    <div id="chat" class="tab-content active">
+    <div class="chat-container">
+        <div class="chat-list" id="chatList">
+            <!-- Dynamically generated chat list items will go here -->
+        </div>
+        <div class="chat-box-container">
+            <div class="chat-box" id="chatBox">
+                <!-- Default chat content will be loaded here -->
+                <div class="message received">Hello! How are you?</div>
+                <div class="message sent">I’m doing fine. How about you?</div>
+            </div>
+            <div class="message-box">
+                <input type="text" placeholder="Type your message..." id="messageInput">
+                <button id="sendMessage">Send</button>
+            </div>
+        </div>
+    </div>
     </div>
 
     <div id="feedback" class="tab-content">
@@ -652,64 +701,45 @@
             </div>
         </div>
 
-        <div id="chat" class="tab-content active">
-    <div class="chat-container">
-        <div class="chat-list" id="chatList">
-            <!-- Dynamically generated chat list items will go here -->
-        </div>
-        <div class="chat-box-container">
-            <div class="chat-box" id="chatBox">
-                <!-- Default chat content will be loaded here -->
-                <div class="message received">Hello! How are you?</div>
-                <div class="message sent">I’m doing fine. How about you?</div>
-            </div>
-            <div class="message-box">
-                <input type="text" placeholder="Type your message..." id="messageInput">
-                <button id="sendMessage">Send</button>
-            </div>
-        </div>
-    </div>
-    </div>
-    
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-    // Tab switching logic
-    const tabs = document.querySelectorAll('.tab');
-    const contents = document.querySelectorAll('.tab-content');
+    <script>
+        // Tab switching logic
+        const tabs = document.querySelectorAll('.tab');
+        const contents = document.querySelectorAll('.tab-content');
 
-    tabs.forEach(tab => {
-        tab.addEventListener('click', () => {
-            tabs.forEach(t => t.classList.remove('active'));
-            contents.forEach(c => c.classList.remove('active'));
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Remove active class from all tabs and hide all contents
+                tabs.forEach(t => t.classList.remove('active'));
+                contents.forEach(c => c.classList.remove('active'));
 
-            tab.classList.add('active');
-            document.getElementById(tab.dataset.tab).classList.add('active');
+                // Add active class to the clicked tab and show its content
+                tab.classList.add('active');
+                document.getElementById(tab.dataset.tab).classList.add('active');
+            });
         });
-    });
 
-    // Load users and chat messages
-    loadUserList();
+        loadUserList();
 
-    // Send message logic
-    document.getElementById("sendMessage").addEventListener("click", function () {
-        const messageInput = document.getElementById("messageInput");
-        const messageText = messageInput.value.trim();
-        if (messageText && document.querySelector(".chat-list-item.active")) {
-            const userEmail = document.querySelector(".chat-list-item.active").getAttribute("data-chat");
-            sendMessageToUser(userEmail, messageText);
-        } else {
-            alert("Please select a user and enter a message.");
-        }
-    });
-
-    // Listen for Enter key to send messages
-    document.getElementById("messageInput").addEventListener("keypress", function (event) {
-        if (event.key === "Enter") {
-            document.getElementById("sendMessage").click();
-        }
-    });
+// Send message logic
+document.getElementById("sendMessage").addEventListener("click", function () {
+    const messageInput = document.getElementById("messageInput");
+    const messageText = messageInput.value.trim();
+    if (messageText && document.querySelector(".chat-list-item.active")) {
+        const userEmail = document.querySelector(".chat-list-item.active").getAttribute("data-chat");
+        sendMessageToUser(userEmail, messageText);
+    } else {
+        alert("Please select a user and enter a message.");
+    }
 });
 
+// Listen for Enter key to send messages
+document.getElementById("messageInput").addEventListener("keypress", function (event) {
+    if (event.key === "Enter") {
+        document.getElementById("sendMessage").click();
+    }
+});
+
+// Get unread message count
 function getUnreadMessages(userEmail) {
     return fetch(`https://umakmdo-91b845374d5b.herokuapp.com/Admin/getUnreadMessages.php?email=${encodeURIComponent(userEmail)}`)
         .then(response => {
@@ -738,7 +768,6 @@ async function loadUserList() {
             throw new Error("Failed to load users. Status: " + response.status);
         }
         const data = await response.json();
-        console.log("Loaded users:", data);
         
         const chatListDiv = document.getElementById("chatList");
         chatListDiv.innerHTML = "";
@@ -751,32 +780,24 @@ async function loadUserList() {
             userElement.classList.add("chat-list-item");
             userElement.setAttribute("data-chat", user.umak_email);
 
-            // Create a container for name and unread count
             const userNameContainer = document.createElement("div");
             userNameContainer.classList.add("user-name-container");
 
-            // Add user name
             const userName = document.createElement("span");
             userName.classList.add("user-name");
             userName.textContent = user.first_name + ' ' + user.last_name;
 
-            // Create unread badge (Initially hidden)
             const unreadCountDiv = document.createElement("span");
             unreadCountDiv.classList.add("unread-count");
-            unreadCountDiv.textContent = "0"; // Default unread count (can be updated later)
-            unreadCountDiv.style.display = "none"; // Hide the badge by default
+            unreadCountDiv.textContent = "0"; // Default unread count
+            unreadCountDiv.style.display = "none"; // Hide by default
 
-            // Append user name and unread count to the container
             userNameContainer.appendChild(userName);
             userNameContainer.appendChild(unreadCountDiv);
 
-            // Append the container to the user element
             userElement.appendChild(userNameContainer);
-
-            // Add the user element to the chat list
             chatListDiv.appendChild(userElement);
 
-            // Add click event to load messages
             userElement.addEventListener("click", () => {
                 document.querySelectorAll(".chat-list-item").forEach(u => u.classList.remove("active"));
                 userElement.classList.add("active");
@@ -784,11 +805,10 @@ async function loadUserList() {
                 markMessagesAsRead(user.umak_email, userElement);
             });
 
-            // Get unread message count asynchronously
-            const unreadMessages = await getUnreadMessages(user.umak_email); // Await the result
+            const unreadMessages = await getUnreadMessages(user.umak_email);
             if (unreadMessages > 0) {
                 unreadCountDiv.textContent = unreadMessages;
-                unreadCountDiv.style.display = "inline-block"; // Show the badge when there are unread messages
+                unreadCountDiv.style.display = "inline-block"; // Show badge
             }
         }
     } catch (error) {
@@ -796,16 +816,6 @@ async function loadUserList() {
         alert("Error loading user list: " + error.message);
     }
 }
-function updateChatUIToShowMessagesAsRead(userElement) {
-    const chatBox = document.getElementById("chatBox");
-    const messages = chatBox.querySelectorAll(".message.received");
-    messages.forEach(message => {
-        message.classList.remove("unread"); // Remove "unread" class or update UI accordingly
-        message.classList.add("read"); // Optional: add a "read" class to indicate it was marked as read
-    });
-}
-
-
 
 function loadMessages(userEmail, userElement) {
     console.log("Loading messages for user:", userEmail);
@@ -818,14 +828,13 @@ function loadMessages(userEmail, userElement) {
             return response.json();
         })
         .then(data => {
-            console.log("Loaded messages:", data); // Log the whole data
             const chatBox = document.getElementById("chatBox");
 
             chatBox.innerHTML = ""; // Clear the chat box
 
-            let unreadCount = 0; // To count unread messages
+            let unreadCount = 0;
 
-            if (!data || data.length === 0) {
+            if (!Array.isArray(data) || data.length === 0) {
                 const noMessageDiv = document.createElement("div");
                 noMessageDiv.classList.add("no-messages");
                 noMessageDiv.textContent = "No messages yet.";
@@ -834,116 +843,87 @@ function loadMessages(userEmail, userElement) {
                 data.forEach(message => {
                     const messageDiv = document.createElement("div");
 
-                    if (message.message || message.sender_email || message.receiver_email) {
-                        const messageContentDiv = document.createElement("div");
-                        messageContentDiv.classList.add("message-content");
-                        messageContentDiv.textContent = message.message;
+                    const messageContentDiv = document.createElement("div");
+                    messageContentDiv.classList.add("message-content");
+                    messageContentDiv.textContent = message.message;
 
-                        if (message.receiver_email === userEmail && message.status === "unread") {
-                            unreadCount++; // Increment unread count if message is unread
-                        }
-
-                        if (message.sender_email === userEmail) {
-                            messageDiv.classList.add("message", "received");
-                        } else if (message.receiver_email === userEmail) {
-                            messageDiv.classList.add("message", "sent");
-                        }
-
-                        messageDiv.appendChild(messageContentDiv);
-                        chatBox.appendChild(messageDiv);
+                    if (message.receiver_email === userEmail && message.status === "unread") {
+                        unreadCount++;
                     }
+
+                    if (message.sender_email === userEmail) {
+                        messageDiv.classList.add("message", "received");
+                    } else if (message.receiver_email === userEmail) {
+                        messageDiv.classList.add("message", "sent");
+                    }
+
+                    messageDiv.appendChild(messageContentDiv);
+                    chatBox.appendChild(messageDiv);
                 });
             }
 
-            // Update the unread message count
             const unreadCountDiv = userElement.querySelector(".unread-count");
 
-            // Hide the unread count badge if unreadCount is 0
             if (unreadCount === 0) {
                 unreadCountDiv.style.display = "none";  // Hide the badge
             } else {
-                unreadCountDiv.style.display = "inline-block"; // Show the badge
+                unreadCountDiv.style.display = "inline-block";
                 unreadCountDiv.textContent = unreadCount; // Update unread count
             }
         })
         .catch(error => {
             console.error("Error loading messages:", error);
-            const chatBox = document.getElementById("chatBox");
-            chatBox.innerHTML = `<div class="error-message">Error loading messages: ${error.message}</div>`;
         });
 }
 
-function markMessagesAsRead(userEmail, userElement) {
-    fetch("https://umakmdo-91b845374d5b.herokuapp.com/Admin/mark_messages_read.php", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ user_email: userEmail })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.status === "success") {
-            console.log("Messages marked as read successfully.");
-            // Update the UI or do any other action on success if necessary
-            updateChatUIToShowMessagesAsRead(userElement);
-        } else {
-            console.error("Failed to mark messages as read.");
-        }
-    })
-    .catch(error => {
-        console.error("Error marking messages as read:", error);
-    });
-}
-
-function updateChatUIToShowMessagesAsRead(userElement) {
-    // Here you can update the UI to reflect that the messages have been marked as read
-    const chatBox = document.getElementById("chatBox");
-    const messages = chatBox.querySelectorAll(".message.received");
-    messages.forEach(message => {
-        message.classList.remove("unread"); // Remove "unread" class or update UI accordingly
-    });
-}
-
 function sendMessageToUser(userEmail, messageText) {
-    // Append the sent message to the chat UI immediately
-    const chatBox = document.getElementById("chatBox");
-    const messageDiv = document.createElement("div");
-    messageDiv.classList.add("message", "sent");
-    messageDiv.textContent = messageText;
-    chatBox.appendChild(messageDiv);
-
-    // Scroll to the bottom to show the new message
-    chatBox.scrollTop = chatBox.scrollHeight;
-
-    // Send the message to the server
     fetch("https://umakmdo-91b845374d5b.herokuapp.com/Admin/send_message.php", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
         },
         body: JSON.stringify({
-            sender_email: "admin2@example.com", // Replace with dynamic sender email if possible
+            sender_email: "admin2@example.com", // Replace with dynamic sender email
             receiver_email: userEmail,
-            message_text: messageText
+            message: messageText
         })
     })
-        .then(response => response.json())
+    .then(response => {
+        if (response.ok) {
+            console.log("Message sent successfully");
+            loadMessages(userEmail);
+        } else {
+            throw new Error("Failed to send message.");
+        }
+    })
+    .catch(error => {
+        console.error("Error sending message:", error);
+    });
+}
+
+function markMessagesAsRead(userEmail, userElement) {
+    fetch("https://umakmdo-91b845374d5b.herokuapp.com/Admin/mark_messages_read.php?user_email=" + encodeURIComponent(userEmail))
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`Failed to mark messages as read. Status: ${response.status}`);
+            }
+            return response.json();
+        })
         .then(data => {
-            if (data.status === "success") {
-                console.log("Message sent successfully.");
-                document.getElementById("messageInput").value = ""; // Clear the input field
-                
-                // Optional: Uncomment to refresh messages after a delay
-                // setTimeout(() => loadMessages(userEmail), 500);
-            } else {
-                alert("Error sending message. Please try again.");
+            if (data.success) {
+                updateChatUIToShowMessagesAsRead(userElement);
             }
         })
         .catch(error => {
-            console.error("Error sending message:", error);
+            console.error("Error marking messages as read:", error);
         });
 }
+
+function updateChatUIToShowMessagesAsRead(userElement) {
+    const unreadCountDiv = userElement.querySelector(".unread-count");
+    unreadCountDiv.style.display = "none";  // Hide unread count
+}
+
     //announcement script
     document.addEventListener('DOMContentLoaded', async function () {
     const announcementContainer = document.querySelector('#announcements .announcement-container');
