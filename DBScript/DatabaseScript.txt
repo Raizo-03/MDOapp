@@ -61,3 +61,19 @@ CREATE TABLE IF NOT EXISTS Messages (
     timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     status ENUM('unread', 'read') DEFAULT 'unread' NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS Notes (
+    note_id INT AUTO_INCREMENT PRIMARY KEY,
+    umak_email VARCHAR(100) NOT NULL, -- Reference the umak_email field in Users table
+    title VARCHAR(255) NOT NULL,
+    symptoms TEXT NOT NULL,
+    mood VARCHAR(50),
+    medicine TEXT,
+    created_at DATETIME NOT NULL, -- Explicitly set date and time when created
+    FOREIGN KEY (umak_email) REFERENCES Users(umak_email)
+);
+
+
+
+
+
