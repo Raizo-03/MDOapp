@@ -74,7 +74,7 @@ if ($conn->connect_error) {
         }
 
         .header .text-container {
-            font-size: 14px;
+            font-size: 16px;
         }
 
         .header .dashboard-title {

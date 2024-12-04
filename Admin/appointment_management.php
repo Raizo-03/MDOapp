@@ -100,7 +100,7 @@ $resultNoShow = $conn->query($sq1234);
 
         .header .text-container {
             color: white;
-            font-size: 14px;
+            font-size: 16px;
         }
 
         .header .dashboard-title {
