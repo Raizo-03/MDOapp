@@ -47,7 +47,7 @@ if ($resultConfirmedRequests = $conn->query($SqlConfirmedRequests)) {
 }
 
 $unreadMessages = 0;
-$SqlUnreadMessages = "SELECT COUNT(*) as count FROM Messages WHERE status = 'unread'";
+$SqlUnreadMessages = "SELECT COUNT(*) as count FROM Messages WHERE status = 'unread' AND receiver_email = 'admin2@example.com'";
 if ($resultUnreadMessages = $conn->query($SqlUnreadMessages)) {
     $unreadMessages = $resultUnreadMessages->fetch_assoc()['count'] ?? 0;
 }
