@@ -584,7 +584,7 @@
     <div class="back-link-container">
             <a href="dashboard.php" class="back-link">Back to Dashboard</a>
         </div>
-
+        
     <!-- Tabs -->
     <div class="tabs">
         <div class="tab active" data-tab="chat">Chat</div>
@@ -726,34 +726,20 @@
 
 
         <script>
-            //Tab switching logic
- document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener('DOMContentLoaded', () => {
+    // Tab switching logic
     const tabs = document.querySelectorAll('.tab');
     const contents = document.querySelectorAll('.tab-content');
-    // Function to activate tab based on hash or default
-    const activateTabFromHash = () => {
-        const hash = window.location.hash.substring(1) || 'active'; // Default to 'active'
-        tabs.forEach(tab => tab.classList.remove('active'));
-        contents.forEach(content => content.classList.remove('active'));
-        const activeTab = document.querySelector(`.tab[data-tab="${hash}"]`);
-        const activeContent = document.getElementById(hash);
-        if (activeTab && activeContent) {
-            activeTab.classList.add('active');
-            activeContent.classList.add('active');
-        }
-    };
-    // Listen for tab clicks
+
     tabs.forEach(tab => {
         tab.addEventListener('click', () => {
-            const target = tab.dataset.tab;
-            window.location.hash = target; // Update URL hash
-            activateTabFromHash(); // Activate the clicked tab
+            tabs.forEach(t => t.classList.remove('active'));
+            contents.forEach(c => c.classList.remove('active'));
+
+            tab.classList.add('active');
+            document.getElementById(tab.dataset.tab).classList.add('active');
         });
     });
-    // Handle page load and hash change
-    window.addEventListener('hashchange', activateTabFromHash);
-    activateTabFromHash(); // Activate tab on initial page load
-});
 
     // Load users and chat messages
     loadUserList();
@@ -776,6 +762,7 @@
             document.getElementById("sendMessage").click();
         }
     });
+});
 
 function getUnreadMessages(userEmail) {
     return fetch(`https://umakmdo-91b845374d5b.herokuapp.com/Admin/getUnreadMessages.php?email=${encodeURIComponent(userEmail)}`)
