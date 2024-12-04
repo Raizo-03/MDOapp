@@ -333,6 +333,7 @@ $conn->close();
     <div class="back-link-container">
             <a href="dashboard.php" class="back-link">Back to Dashboard</a>
         </div>
+        
     <script>
         function openModal() {
             document.getElementById('editModal').style.display = 'flex';

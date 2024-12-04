@@ -30,9 +30,9 @@ $activeUsers = $resultActiveCount->fetch_assoc()['count'] ?? 0;
 $sqlInactiveCount = "SELECT COUNT(*) as count FROM Users WHERE status = 'inactive'";
 $resultInactiveCount = $conn->query($sqlInactiveCount);
 $inactiveUsers = $resultInactiveCount->fetch_assoc()['count'] ?? 0;
-$pendingRequests = 18; 
-$confirmedRequests = 42; 
-$unreadMessages = 7;
+$pendingRequests = "SELECT COUNT(*) as count FROM Bookings WHERE status = 'Pending'"; 
+$confirmedRequests = "SELECT COUNT(*) as count FROM Bookings WHERE status = 'Approved'"; 
+$unreadMessages = "SELECT COUNT(*) as count FROM Messages WHERE status = 'unread'";
 ?>
 
 <!DOCTYPE html>
