@@ -776,7 +776,6 @@
             document.getElementById("sendMessage").click();
         }
     });
-});
 
 function getUnreadMessages(userEmail) {
     return fetch(`https://umakmdo-91b845374d5b.herokuapp.com/Admin/getUnreadMessages.php?email=${encodeURIComponent(userEmail)}`)
