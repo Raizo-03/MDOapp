@@ -15,9 +15,9 @@ if (!$conn) {
     die("Connection failed: " . mysqli_connect_error());
 }
 
-// Check if the email is provided in the POST request
-if (isset($_POST['umak_email']) && !empty($_POST['umak_email'])) {
-    $umak_email = $conn->real_escape_string($_POST['umak_email']);
+// Check if the email is provided in the GET request
+if (isset($_GET['umak_email']) && !empty($_GET['umak_email'])) {
+    $umak_email = $conn->real_escape_string($_GET['umak_email']);
 
     // Query to fetch notes related to the user
     $sql = "SELECT note_id, title, symptoms, mood, medicine, created_at 
