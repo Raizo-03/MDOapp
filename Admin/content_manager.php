@@ -349,6 +349,7 @@
             width: 80%;
             max-width: 500px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            position: relative;
         }
 
         .close {
@@ -358,6 +359,7 @@
             position: absolute;
             top: 10px;
             right: 20px;
+            position: relative;
         }
 
         .close:hover,
@@ -532,6 +534,24 @@
     display: none; /* Ensure it's hidden by default */
 }
 
+.back-link {
+            display: inline-block;
+            margin-top: 20px;
+            text-decoration: none;
+            color:black;
+            padding: 10px 15px;
+            border-radius: 5px;
+            text-align: center;
+            background-color:#F5EC3A;
+            float:right;
+        }
+        .back-link-container {
+            position: fixed;
+            bottom: 20px; /* Distance from the bottom */
+            left: 20px; /* Distance from the right */
+            z-index: 10; /* Ensures it stays on top */
+        }
+
     
     </style>
 </head>
@@ -549,10 +569,10 @@
             <a href="user_management.php" title="User Management">
                 <img src="../MDO/twopeople.png" alt="User Management">
             </a>
-            <a href="appointment_management.php" title="Appointment Management">
+            <a href="appointment_management.php#requests" title="Appointment Management">
                 <img src="../MDO/user_journal.png" alt="Appointment Management">
             </a>
-            <a href="content_manager.php" title="Content Manager">
+            <a href="content_manager.php#chat" title="Content Manager">
                 <img src="../MDO/edit_yellow.png" alt="Content Manager">
             </a>
             <a href="admin_profile.php" title="Admin Profile">
@@ -560,6 +580,10 @@
             </a>
         </div>
     </div>
+
+    <div class="back-link-container">
+            <a href="dashboard.php" class="back-link">Back to Dashboard</a>
+        </div>
 
     <!-- Tabs -->
     <div class="tabs">
@@ -702,20 +726,34 @@
 
 
         <script>
-document.addEventListener('DOMContentLoaded', () => {
-    // Tab switching logic
+            //Tab switching logic
+ document.addEventListener("DOMContentLoaded", () => {
     const tabs = document.querySelectorAll('.tab');
     const contents = document.querySelectorAll('.tab-content');
-
+    // Function to activate tab based on hash or default
+    const activateTabFromHash = () => {
+        const hash = window.location.hash.substring(1) || 'active'; // Default to 'active'
+        tabs.forEach(tab => tab.classList.remove('active'));
+        contents.forEach(content => content.classList.remove('active'));
+        const activeTab = document.querySelector(`.tab[data-tab="${hash}"]`);
+        const activeContent = document.getElementById(hash);
+        if (activeTab && activeContent) {
+            activeTab.classList.add('active');
+            activeContent.classList.add('active');
+        }
+    };
+    // Listen for tab clicks
     tabs.forEach(tab => {
         tab.addEventListener('click', () => {
-            tabs.forEach(t => t.classList.remove('active'));
-            contents.forEach(c => c.classList.remove('active'));
-
-            tab.classList.add('active');
-            document.getElementById(tab.dataset.tab).classList.add('active');
+            const target = tab.dataset.tab;
+            window.location.hash = target; // Update URL hash
+            activateTabFromHash(); // Activate the clicked tab
         });
     });
+    // Handle page load and hash change
+    window.addEventListener('hashchange', activateTabFromHash);
+    activateTabFromHash(); // Activate tab on initial page load
+});
 
     // Load users and chat messages
     loadUserList();

@@ -475,10 +475,10 @@ $resultInactive = $conn->query($sqlInactive);
             <a href="user_management.php" title="User Management">
                 <img src="../MDO/twopeople_yellow.png" alt="User Management">
             </a>
-            <a href="appointment_management.php" title="Appointment Management">
+            <a href="appointment_management.php#requests" title="Appointment Management">
                 <img src="../MDO/user_journal.png" alt="Appointment Management">
             </a>
-            <a href="content_manager.php" title="Content Manager">
+            <a href="content_manager.php#chat" title="Content Manager">
                 <img src="../MDO/edit_white.png" alt="Content Manager">
             </a>
             <a href="admin_profile.php" title="Admin Profile">
@@ -624,14 +624,32 @@ $resultInactive = $conn->query($sqlInactive);
         const tabs = document.querySelectorAll('.tab');
         const contents = document.querySelectorAll('.content');
 
-        tabs.forEach(tab => {
+        const activateTabFromHash = () => {
+        const hash = window.location.hash.substring(1) || 'active'; // Default to 'active'
+        tabs.forEach(tab => tab.classList.remove('active'));
+        contents.forEach(content => content.classList.remove('active'));
+        const activeTab = document.querySelector(`.tab[data-tab="${hash}"]`);
+        const activeContent = document.getElementById(hash);
+        if (activeTab && activeContent) {
+            activeTab.classList.add('active');
+            activeContent.classList.add('active');
+        }
+    };
+    
+    tabs.forEach(tab => {
             tab.addEventListener('click', () => {
                 tabs.forEach(t => t.classList.remove('active'));
                 contents.forEach(c => c.classList.remove('active'));
                 tab.classList.add('active');
                 document.getElementById(tab.dataset.tab).classList.add('active');
+                const target = tab.dataset.tab;
+                window.location.hash = target; // Update URL hash
+                activateTabFromHash();
             });
         });
+          // Handle page load and hash change
+    window.addEventListener('hashchange', activateTabFromHash);
+    activateTabFromHash();
     
     // sort
     const params = new URLSearchParams(window.location.search);

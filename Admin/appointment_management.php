@@ -251,6 +251,23 @@ $resultApproved = $conn->query($sql2);
         .modal-actions .close-btn:hover {
             background-color: #1E3A8A;
         }
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            text-decoration: none;
+            color:black;
+            padding: 10px 15px;
+            border-radius: 5px;
+            text-align: center;
+            background-color:#F5EC3A;
+            float:right;
+        }
+        .back-link-container {
+            position: fixed;
+            bottom: 20px; /* Distance from the bottom */
+            right: 20px; /* Distance from the right */
+            z-index: 10; /* Ensures it stays on top */
+        }
     </style>
     
 </head>
@@ -271,7 +288,7 @@ $resultApproved = $conn->query($sql2);
             <a href="appointment_management.php" title="Appointment Management">
                 <img src="../MDO/user_journal_yellow.png" alt="Appointment Management">
             </a>
-            <a href="content_manager.php" title="Content Manager">
+            <a href="content_manager.php#chat" title="Content Manager">
                 <img src="../MDO/edit_white.png" alt="Content Manager">
             </a>
             <a href="admin_profile.php" title="Admin Profile">
@@ -279,6 +296,11 @@ $resultApproved = $conn->query($sql2);
             </a>
         </div>
     </div>
+
+    <div class="back-link-container">
+            <a href="dashboard.php" class="back-link">Back to Dashboard</a>
+        </div>
+
 
     <!-- Tabs -->
     <div class="tabs">
@@ -447,19 +469,33 @@ $resultApproved = $conn->query($sql2);
     <!-- JavaScript -->
     <script>
         // Tab switching
-        const tabs = document.querySelectorAll('.tab');
-        const contents = document.querySelectorAll('.content');
-
-        tabs.forEach(tab => {
-            tab.addEventListener('click', () => {
-                tabs.forEach(t => t.classList.remove('active'));
-                contents.forEach(c => c.classList.remove('active'));
-
-        // Activate the clicked tab and its corresponding content
-        tab.classList.add('active');
-        document.getElementById(tab.dataset.tab).classList.add('active');
+         document.addEventListener("DOMContentLoaded", () => {
+    const tabs = document.querySelectorAll('.tab');
+    const contents = document.querySelectorAll('.content');
+    // Function to activate tab based on hash or default
+    const activateTabFromHash = () => {
+        const hash = window.location.hash.substring(1) || 'active'; // Default to 'active'
+        tabs.forEach(tab => tab.classList.remove('active'));
+        contents.forEach(content => content.classList.remove('active'));
+        const activeTab = document.querySelector(`.tab[data-tab="${hash}"]`);
+        const activeContent = document.getElementById(hash);
+        if (activeTab && activeContent) {
+            activeTab.classList.add('active');
+            activeContent.classList.add('active');
+        }
+    };
+    // Listen for tab clicks
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            const target = tab.dataset.tab;
+            window.location.hash = target; // Update URL hash
+            activateTabFromHash(); // Activate the clicked tab
         });
-        });
+    });
+    // Handle page load and hash change
+    window.addEventListener('hashchange', activateTabFromHash);
+    activateTabFromHash(); // Activate tab on initial page load
+});
 
         // Handle moving to the Confirmed tab
         const acceptButtons = document.querySelectorAll('.accept-btn');        

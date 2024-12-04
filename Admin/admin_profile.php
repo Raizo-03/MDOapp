@@ -246,6 +246,25 @@ $conn->close();
         .logout-btn:hover {
             background-color: #d7372f;
         }
+
+
+         .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            text-decoration: none;
+            color:black;
+            padding: 10px 15px;
+            border-radius: 5px;
+            text-align: center;
+            background-color:#F5EC3A;
+            float:right;
+        }
+        .back-link-container {
+            position: fixed;
+            bottom: 70px; /* Distance from the bottom */
+            right: 20px; /* Distance from the right */
+            z-index: 10; /* Ensures it stays on top */
+        }
     </style>
 </head>
 <body>
@@ -264,10 +283,10 @@ $conn->close();
             <a href="user_management.php" title="User Management">
                 <img src="../MDO/twopeople.png" alt="User Management">
             </a>
-            <a href="appointment_management.php" title="Appointment Management">
+            <a href="appointment_management.php#requests" title="Appointment Management">
                 <img src="../MDO/user_journal.png" alt="Appointment Management">
             </a>
-            <a href="content_manager.php" title="Content Manager">
+            <a href="content_manager.php#chat" title="Content Manager">
                 <img src="../MDO/edit_white.png" alt="Content Manager">
             </a>
             <a href="admin_profile.php" title="Admin Profile">
@@ -311,7 +330,9 @@ $conn->close();
 
     <!-- Logout Button -->
     <button class="logout-btn" onclick="window.location.href='logout.php'">Log Out</button>
-
+    <div class="back-link-container">
+            <a href="dashboard.php" class="back-link">Back to Dashboard</a>
+        </div>
     <script>
         function openModal() {
             document.getElementById('editModal').style.display = 'flex';
