@@ -19,22 +19,29 @@ $user_email = isset($_GET['user_email']) ? $_GET['user_email'] : '';
 
 // Ensure the email parameter is provided
 if (empty($user_email)) {
-    echo "Error: user_email parameter is missing";
+    echo json_encode(["error" => "user_email parameter is missing"]);
     exit;
 }
 
-// Query to count the number of appointments for the given user_email
-$query = "SELECT COUNT(*) as appointment_count FROM Bookings WHERE umak_email = ?";
+// Query to count the number of bookings with status 'Pending' or 'Approved' for the given user_email
+$query = "SELECT 
+            SUM(CASE WHEN status = 'Pending' THEN 1 ELSE 0 END) as pending_count,
+            SUM(CASE WHEN status = 'Approved' THEN 1 ELSE 0 END) as approved_count
+          FROM Bookings 
+          WHERE umak_email = ?";
 $stmt = $conn->prepare($query);
 $stmt->bind_param("s", $user_email); // Bind the email parameter
 $stmt->execute();
-$stmt->bind_result($appointment_count);
+$stmt->bind_result($pending_count, $approved_count);
 $stmt->fetch();
 
 // Close the statement and connection
 $stmt->close();
 $conn->close();
 
-// Return the appointment count as a response
-echo $appointment_count;
+// Return the counts as a JSON response
+echo json_encode([
+    "pending_count" => $pending_count,
+    "approved_count" => $approved_count
+]);
 ?>
