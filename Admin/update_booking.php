@@ -68,7 +68,13 @@ if (isset($data['id']) && isset($data['action'])) {
         $sql = "DELETE FROM Bookings WHERE booking_id = ?";
         $statusMessage = 'We regret to inform you that your appointment has been rejected.';
         $reason = "We encourage you to book another appointment. Thank you.";
-    } else {
+    } else if ($action === 'complete'){
+        $sql = "UPDATE Bookings SET status = 'Completed'  Where booking_id = ?";
+        $statusMessage = 'Your appointment has been completed.';
+    } else if($action === 'noshow'){
+        $sql = "UPDATE Bookings SET status = 'No Show'  Where booking_id = ?";
+        $statusMessage = 'You did not show up to your appointment. Your Email has been flagged';
+    }else {
         echo json_encode(['success' => false, 'message' => 'Invalid action.']);
         exit;
     }

@@ -30,9 +30,23 @@ $sql2 = "SELECT b.*, u.first_name, u.last_name
         JOIN Users u ON b.umak_email = u.umak_email
         WHERE b.status = 'Approved'";
 
+$sq123 = "SELECT b.*, u.first_name, u.last_name 
+        FROM Bookings b
+        JOIN Users u ON b.umak_email = u.umak_email
+        WHERE b.status = 'Completed'";
+
+$sq1234 = "SELECT b.*, u.first_name, u.last_name 
+        FROM Bookings b
+        JOIN Users u ON b.umak_email = u.umak_email
+        WHERE b.status = 'No Show'";
+
 $resultPending = $conn->query($sql);
 
 $resultApproved = $conn->query($sql2);
+
+$resultCompleted = $conn->query($sq123);
+
+$resultNoShow = $conn->query($sq1234);
 ?>
 
 
@@ -185,6 +199,13 @@ $resultApproved = $conn->query($sql2);
         .appointment-actions .reject-btn {
             background-color: #D72638;
         }
+        .appointment-actions .flag-btn {
+            color: black;
+            background-color:#FFFF00;
+        }
+        .appointment-actions .flag-btn:hover {
+            background-color:#FFFF00;
+        }
 
         .appointment-actions .reject-btn:hover {
             background-color: #A01E2A;
@@ -251,23 +272,6 @@ $resultApproved = $conn->query($sql2);
         .modal-actions .close-btn:hover {
             background-color: #1E3A8A;
         }
-        .back-link {
-            display: inline-block;
-            margin-top: 20px;
-            text-decoration: none;
-            color:black;
-            padding: 10px 15px;
-            border-radius: 5px;
-            text-align: center;
-            background-color:#F5EC3A;
-            float:right;
-        }
-        .back-link-container {
-            position: fixed;
-            bottom: 20px; /* Distance from the bottom */
-            right: 20px; /* Distance from the right */
-            z-index: 10; /* Ensures it stays on top */
-        }
     </style>
     
 </head>
@@ -297,16 +301,12 @@ $resultApproved = $conn->query($sql2);
         </div>
     </div>
 
-    <div class="back-link-container">
-            <a href="dashboard.php" class="back-link">Back to Dashboard</a>
-        </div>
-
-
     <!-- Tabs -->
     <div class="tabs">
         <div class="tab active" data-tab="requests">Requests</div>
         <div class="tab" data-tab="confirmed">Confirmed</div>
-        <div class="tab" data-tab="reports">Reports</div>
+        <div class="tab" data-tab="completed">Completed</div>
+        <div class="tab" data-tab="noshow">No Show</div>
     </div>
 
     <!-- Requests Tab -->
@@ -350,18 +350,59 @@ $resultApproved = $conn->query($sql2);
                     <strong>Remarks:</strong> <?= htmlspecialchars($row['remarks']) ?>
                     </div>
                     <div class="appointment-actions">
-                        <button class="reject-btn">✕</button>
+                        <button class="complete-btn">✓</button>
+                         <button class="flag-btn">!</button>
+                         <button class="reject-btn">✕</button>
                     </div>
                 </div>
             <?php endwhile; ?>
         <?php else: ?>
-            <p>No booking requests available.</p>
+            <p class="empty-message">No booking requests available.</p>
+        <?php endif; ?>
+    </div>
+
+     <!-- Confirmed Tab -->
+     <div class="content"id="completed">
+        <?php if ($resultCompleted->num_rows > 0): ?>
+            <?php while ($row = $resultCompleted->fetch_assoc()): ?>
+                <div class="appointment-card" data-id="<?php echo $row['booking_id']; ?>">
+                <div class="appointment-details">
+                    <strong>Requested By:</strong> <?= htmlspecialchars($row['first_name'] . ' ' . $row['last_name']) ?><br>
+                    <strong>Email: </strong> <?= htmlspecialchars($row['umak_email']) ?><br>
+                    <strong>Service:</strong> <?= htmlspecialchars($row['service']) ?><br>
+                    <strong>Service:</strong> <?= htmlspecialchars($row['service_type']) ?><br>
+                    <strong>Date:</strong> <?= htmlspecialchars($row['booking_date']) ?><br>
+                    <strong>Time:</strong> <?= htmlspecialchars($row['booking_time']) ?><br>
+                    <strong>Remarks:</strong> <?= htmlspecialchars($row['remarks']) ?>
+                    </div>
+                    <div class="appointment-actions">
+                    </div>
+                </div>
+            <?php endwhile; ?>
+        <?php else: ?>
+            <p class="empty-message">No Completed requests available.</p>
         <?php endif; ?>
     </div>
 
     <!-- Reports Tab -->
-    <div class="content" id="reports">
-        <p>No reports available.</p>
+    <div class="content" id="noshow">
+    <?php if ($resultNoShow->num_rows > 0): ?>
+            <?php while ($row = $resultNoShow->fetch_assoc()): ?>
+                <div class="appointment-card" data-id="<?php echo $row['booking_id']; ?>">
+                <div class="appointment-details">
+                    <strong>Requested By:</strong> <?= htmlspecialchars($row['first_name'] . ' ' . $row['last_name']) ?><br>
+                    <strong>Email: </strong> <?= htmlspecialchars($row['umak_email']) ?><br>
+                    <strong>Service:</strong> <?= htmlspecialchars($row['service']) ?><br>
+                    <strong>Service:</strong> <?= htmlspecialchars($row['service_type']) ?><br>
+                    <strong>Date:</strong> <?= htmlspecialchars($row['booking_date']) ?><br>
+                    <strong>Time:</strong> <?= htmlspecialchars($row['booking_time']) ?><br>
+                    <strong>Remarks:</strong> <?= htmlspecialchars($row['remarks']) ?>
+                    </div>
+                </div>
+            <?php endwhile; ?>
+        <?php else: ?>    
+            <p class="empty-message">No Flagged requests available.</p>
+        <?php endif; ?>    
     </div>
 
 
@@ -378,6 +419,37 @@ $resultApproved = $conn->query($sql2);
     </div>
 </div>
 <script>
+     const tabs = document.querySelectorAll('.tab');
+    const contents = document.querySelectorAll('.content');
+
+    const activateTabFromHash = () => {
+    const hash = window.location.hash.substring(1) || 'active'; // Default to 'active'
+    tabs.forEach(tab => tab.classList.remove('active'));
+    contents.forEach(content => content.classList.remove('active'));
+
+    const activeTab = document.querySelector(`.tab[data-tab="${hash}"]`);
+    const activeContent = document.getElementById(hash);
+
+    if (activeTab && activeContent) {
+        activeTab.classList.add('active');
+        activeContent.classList.add('active');
+    }
+    };
+    
+    tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                tabs.forEach(t => t.classList.remove('active'));
+                contents.forEach(c => c.classList.remove('active'));
+                tab.classList.add('active');
+                document.getElementById(tab.dataset.tab).classList.add('active');
+                const target = tab.dataset.tab;
+                window.location.hash = target; // Update URL hash
+                activateTabFromHash();
+            });
+        });
+          // Handle page load and hash change
+    window.addEventListener('hashchange', activateTabFromHash);
+    activateTabFromHash(); // Activate tab on initial page load
     // Get the modal and buttons
     const modal = document.getElementById('confirmation-modal');
     const confirmBtn = document.getElementById('confirm-btn');
@@ -414,9 +486,33 @@ $resultApproved = $conn->query($sql2);
             // Show the confirmation modal
             modal.style.display = 'flex';
         });
+    }); 
+
+    // Function to close the modal and reset action
+    function closeModal() {
+        modal.style.display = 'none';
+        actionToPerform = null;
+        cardToUpdate = null;
+    }
+    // Handle Complete Button Click
+    document.querySelectorAll('.complete-btn').forEach(button => {
+        button.addEventListener('click', function () {
+            cardToUpdate = this.closest('.appointment-card');
+            actionToPerform = 'complete';
+            modal.style.display = 'flex';
+        });
     });
 
-    // Confirm Action (Accept or Reject)
+    // Handle Flag Button Click
+    document.querySelectorAll('.flag-btn').forEach(button => {
+        button.addEventListener('click', function () {
+            cardToUpdate = this.closest('.appointment-card');
+            actionToPerform = 'noshow';
+            modal.style.display = 'flex';
+        });
+    });
+
+    // Event listener for the confirm button
     confirmBtn.addEventListener('click', function () {
         if (cardToUpdate && actionToPerform) {
             fetch('update_booking.php', {
@@ -427,33 +523,61 @@ $resultApproved = $conn->query($sql2);
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    // Update UI based on action
+                    // Handle UI update based on action
                     if (actionToPerform === 'accept') {
+                        // Move to Confirmed tab
                         const confirmedTab = document.getElementById('confirmed');
                         confirmedTab.insertAdjacentHTML('beforeend', cardToUpdate.outerHTML);
+                        // Remove the empty message if it exists
+                        const emptyMessage = confirmedTab.querySelector('.empty-message');
+                        if (emptyMessage) {
+                            emptyMessage.style.display = 'none';
+                        }
                         cardToUpdate.remove();
-                        document.querySelector('.empty-message').style.display = 'none';
+                        alert('Booking Approved');
                     } else if (actionToPerform === 'reject') {
+                        // Remove from Requests tab
                         cardToUpdate.remove();
+                        alert('Booking Cancelled');
+                    } else if (actionToPerform === 'complete') {
+                        // Move to Completed tab
+                        const completedTab = document.getElementById('completed');
+                        completedTab.insertAdjacentHTML('beforeend', cardToUpdate.outerHTML);
+                        // Remove the empty message if it exists
+                        const emptyMessage = completedTab.querySelector('.empty-message');
+                        if (emptyMessage) {
+                            emptyMessage.style.display = 'none';
+                        }
+                        cardToUpdate.remove();
+                        alert('Booking marked as Completed');
+                    } else if (actionToPerform === 'noshow') {
+                        // Move to No Show tab
+                        const noShowTab = document.getElementById('noshow');
+                        noShowTab.insertAdjacentHTML('beforeend', cardToUpdate.outerHTML);
+                        // Remove the empty message if it exists
+                        const emptyMessage = noShowTab.querySelector('.empty-message');
+                        if (emptyMessage) {
+                            emptyMessage.style.display = 'none';
+                        }
+                        cardToUpdate.remove();
+                        alert('Booking Flagged');
                     }
+                   
                 } else {
                     alert('Failed to update booking.');
                 }
+            })
+            .catch(error => {
+                alert('Error: ' + error.message);
+            })
+            .finally(() => {
+                closeModal();
             });
         }
-
-        // Close the modal after action
-        modal.style.display = 'none';
-        actionToPerform = null;
-        cardToUpdate = null;
     });
 
-    // Cancel Action (Close Modal)
-    cancelBtn.addEventListener('click', function () {
-        modal.style.display = 'none';
-        actionToPerform = null;
-        cardToUpdate = null;
-    });
+    // Event listener for the cancel button
+    cancelBtn.addEventListener('click', closeModal);
 
     // Close modal when clicking outside of it
     window.onclick = function(event) {
@@ -464,72 +588,5 @@ $resultApproved = $conn->query($sql2);
         }
     }
 </script>
-
-
-    <!-- JavaScript -->
-    <script>
-        // Tab switching
-         document.addEventListener("DOMContentLoaded", () => {
-    const tabs = document.querySelectorAll('.tab');
-    const contents = document.querySelectorAll('.content');
-    // Function to activate tab based on hash or default
-    const activateTabFromHash = () => {
-        const hash = window.location.hash.substring(1) || 'active'; // Default to 'active'
-        tabs.forEach(tab => tab.classList.remove('active'));
-        contents.forEach(content => content.classList.remove('active'));
-        const activeTab = document.querySelector(`.tab[data-tab="${hash}"]`);
-        const activeContent = document.getElementById(hash);
-        if (activeTab && activeContent) {
-            activeTab.classList.add('active');
-            activeContent.classList.add('active');
-        }
-    };
-    // Listen for tab clicks
-    tabs.forEach(tab => {
-        tab.addEventListener('click', () => {
-            const target = tab.dataset.tab;
-            window.location.hash = target; // Update URL hash
-            activateTabFromHash(); // Activate the clicked tab
-        });
-    });
-    // Handle page load and hash change
-    window.addEventListener('hashchange', activateTabFromHash);
-    activateTabFromHash(); // Activate tab on initial page load
-});
-
-        // Handle moving to the Confirmed tab
-        const acceptButtons = document.querySelectorAll('.accept-btn');        
-        const emptyMessage = document.querySelector('.empty-message');
-
-        acceptButtons.forEach(button => {
-        button.addEventListener('click', (e) => {
-        const appointmentCard = e.target.closest('.appointment-card');
-
-        // Replace buttons with "Reschedule" and "Cancel"
-        const actions = clone.querySelector('.appointment-actions');
-        actions.innerHTML = `
-            <img src="../MDO/clock.png" alt="Reschedule" class="reschedule-btn" onclick="openModal('rescheduleModal')">
-            <img src="../MDO/delete.png" alt="Delete" class="cancel-btn" onclick="openModal('cancelModal')">
-        `;  
-
-        // Remove the original card from Requests
-        appointmentCard.remove();
-
-        // Remove the "No confirmed appointments yet" message if it exists
-        if (emptyMessage) {
-            emptyMessage.style.display = 'none';
-        }
-        });
-        });
-
-        // Modal functions
-        function openModal(modalId) {
-        document.getElementById(modalId).style.display = 'flex';
-        }
-
-        function closeModal(modalId) {
-        document.getElementById(modalId).style.display = 'none';
-        }
-    </script>
 </body>
 </html>

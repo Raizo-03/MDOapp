@@ -110,13 +110,28 @@ $toggleSortUrlInactive = ($sortInactive === 'name') ? "?tab=inactive&sort_inacti
 $buttonTextInactive = ($sortInactive === 'name') ? "Unsort Inactive" : "Sort Inactive by: Name";
 
 // Query to fetch active users
-$sqlActive = "SELECT user_id, student_id, umak_email, first_name, last_name, created_at, status 
-              FROM Users WHERE status = 'active' ORDER BY $orderByActive";
+$sqlActive = "
+    SELECT u.user_id, u.student_id, u.umak_email, u.first_name, u.last_name, u.created_at,
+           COUNT(b.booking_id) AS no_show_count
+    FROM Users u
+    LEFT JOIN Bookings b ON u.umak_email = b.umak_email AND b.status = 'No Show'
+    WHERE u.status = 'active'
+    GROUP BY u.user_id
+    ORDER BY $orderByActive";
+
+
 $resultActive = $conn->query($sqlActive);
 
 // Query to fetch inactive users
-$sqlInactive = "SELECT user_id, student_id, umak_email, first_name, last_name, created_at, status 
-                FROM Users WHERE status = 'inactive' ORDER BY $orderByInactive";
+$sqlInactive = "
+    SELECT u.user_id, u.student_id, u.umak_email, u.first_name, u.last_name, u.created_at,
+           COUNT(b.booking_id) AS no_show_count
+    FROM Users u
+    LEFT JOIN Bookings b ON u.umak_email = b.umak_email AND b.status = 'No Show'
+    WHERE u.status = 'inactive'
+    GROUP BY u.user_id
+    ORDER BY $orderByInactive";
+
 $resultInactive = $conn->query($sqlInactive);
 ?>
 
@@ -455,6 +470,12 @@ $resultInactive = $conn->query($sqlInactive);
         .btn-gray:hover {
             background-color: #c0c0c0; /* Darker gray on hover */
         }
+        .warning-icon {
+            width: 20px;
+            height: 20px;
+            margin-left: 10px;
+            vertical-align: middle;
+        }
     </style>
 </head>
 <body>
@@ -503,15 +524,20 @@ $resultInactive = $conn->query($sqlInactive);
         </div>
         
         <div class="user-list">
-            <?php while ($row = $resultActive->fetch_assoc()): ?>
-                <div class="user-card">
-                    <h3><?= htmlspecialchars($row['last_name']) ?>, <?= htmlspecialchars($row['first_name']) ?></h3>
-                    <div class="actions">
-                        <img src="../MDO/edit.png" alt="Edit" class="openEditModalBtn" data-id="<?= htmlspecialchars($row['user_id']) ?>">
-                        <img src="../MDO/adjust.png" alt="Settings" class="openModalBtn" data-id="<?= $row['user_id'] ?>" data-status="inactive">
-                    </div>
-                </div>
-            <?php endwhile; ?>
+        <?php while ($row = $resultActive->fetch_assoc()): ?>
+        <div class="user-card">
+            <h3>
+                <?= htmlspecialchars($row['last_name']) ?>, <?= htmlspecialchars($row['first_name']) ?>
+                <?php if ($row['no_show_count'] > 0): ?>
+                    <img src="../MDO/warning.png" alt="No Show Warning" title="This user has <?= $row['no_show_count'] ?> no-show booking(s)." class="warning-icon">
+                <?php endif; ?>
+            </h3>
+            <div class="actions">
+                <img src="../MDO/edit.png" alt="Edit" class="openEditModalBtn" data-id="<?= htmlspecialchars($row['user_id']) ?>">
+                <img src="../MDO/adjust.png" alt="Settings" class="openModalBtn" data-id="<?= htmlspecialchars($row['user_id']) ?>" data-status="inactive">
+            </div>
+        </div>
+    <?php endwhile; ?>
         </div>
     </div>
 
@@ -527,7 +553,12 @@ $resultInactive = $conn->query($sqlInactive);
         <div class="user-list">
             <?php while ($row = $resultInactive->fetch_assoc()): ?>
                 <div class="user-card">
-                    <h3><?= htmlspecialchars($row['last_name']) ?>, <?= htmlspecialchars($row['first_name']) ?></h3>
+                <h3>
+                    <?= htmlspecialchars($row['last_name']) ?>, <?= htmlspecialchars($row['first_name']) ?>
+                    <?php if ($row['no_show_count'] > 0): ?>
+                    <img src="../MDO/warning.png" alt="No Show Warning" title="This user has <?= $row['no_show_count'] ?> no-show booking(s)." class="warning-icon">
+                    <?php endif; ?>
+                    </h3>
                     <div class="actions">
                         <img src="../MDO/edit.png" alt="Edit" class="openEditModalBtn" data-id="<?= htmlspecialchars($row['user_id']) ?>">
                         <img src="../MDO/adjust.png" alt="Settings" class="openModalBtn" data-id="<?= $row['user_id'] ?>" data-status="active">
