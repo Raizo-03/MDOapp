@@ -21,24 +21,36 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
     exit();
 }
 
-// Count active users
+// Queries and counts
+$activeUsers = 0;
 $sqlActiveCount = "SELECT COUNT(*) as count FROM Users WHERE status = 'active'";
-$resultActiveCount = $conn->query($sqlActiveCount);
-$activeUsers = $resultActiveCount->fetch_assoc()['count'] ?? 0;
+if ($resultActiveCount = $conn->query($sqlActiveCount)) {
+    $activeUsers = $resultActiveCount->fetch_assoc()['count'] ?? 0;
+}
 
-// Count inactive users
+$inactiveUsers = 0;
 $sqlInactiveCount = "SELECT COUNT(*) as count FROM Users WHERE status = 'inactive'";
-$resultInactiveCount = $conn->query($sqlInactiveCount);
-$inactiveUsers = $resultInactiveCount->fetch_assoc()['count'] ?? 0;
+if ($resultInactiveCount = $conn->query($sqlInactiveCount)) {
+    $inactiveUsers = $resultInactiveCount->fetch_assoc()['count'] ?? 0;
+}
 
+$pendingRequests = 0;
 $SqlPendingRequests = "SELECT COUNT(*) as count FROM Bookings WHERE status = 'Pending'";
-$pendingRequests = $conn->query($SqlPendingRequests);
+if ($resultPendingRequests = $conn->query($SqlPendingRequests)) {
+    $pendingRequests = $resultPendingRequests->fetch_assoc()['count'] ?? 0;
+}
 
-$SqlConfirmedRequests = "SELECT COUNT(*) as count FROM Bookings WHERE status = 'Approved'"; 
-$confirmedRequests = $conn->query($SqlConfirmedRequests);
+$confirmedRequests = 0;
+$SqlConfirmedRequests = "SELECT COUNT(*) as count FROM Bookings WHERE status = 'Approved'";
+if ($resultConfirmedRequests = $conn->query($SqlConfirmedRequests)) {
+    $confirmedRequests = $resultConfirmedRequests->fetch_assoc()['count'] ?? 0;
+}
 
-$SqlUnreadMessages =  "SELECT COUNT(*) as count FROM Messages WHERE status = 'unread'";
-$unreadMessages =  $conn->query($SqlUnreadMessages);
+$unreadMessages = 0;
+$SqlUnreadMessages = "SELECT COUNT(*) as count FROM Messages WHERE status = 'unread'";
+if ($resultUnreadMessages = $conn->query($SqlUnreadMessages)) {
+    $unreadMessages = $resultUnreadMessages->fetch_assoc()['count'] ?? 0;
+}
 ?>
 
 <!DOCTYPE html>
