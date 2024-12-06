@@ -23,7 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                        (SELECT COUNT(*) FROM Feedback f WHERE f.booking_id = b.booking_id AND f.user_email = ?) AS has_feedback 
                 FROM Bookings b 
                 WHERE b.umak_email = ? 
-                ORDER BY b.booking_date DESC LIMIT 1";
+                ORDER BY b.booking_id DESC LIMIT 1";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("ss", $user_email, $user_email);
         $stmt->execute();
