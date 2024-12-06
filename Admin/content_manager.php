@@ -1430,6 +1430,10 @@ function sendMessageToUser(userEmail, messageText) {
             feedbackContainer.innerHTML = "<p>Failed to load feedback. Please try again later.</p>";
         });
 }
+document.addEventListener("DOMContentLoaded", function () {
+            fetchFeedback();
+        });
+
 function fetchFeedback() {
     const feedbackContainer = document.getElementById("feedback");
     feedbackContainer.innerHTML = "<p>Loading feedback...</p>";
