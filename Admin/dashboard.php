@@ -53,7 +53,6 @@ if ($resultUnreadMessages = $conn->query($SqlUnreadMessages)) {
 }
 ?>
 
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
