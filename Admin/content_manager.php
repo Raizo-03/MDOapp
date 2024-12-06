@@ -1380,51 +1380,58 @@ function sendMessageToUser(userEmail, messageText) {
     });
 
     document.addEventListener("DOMContentLoaded", function () {
-            fetchFeedback();
-        });
-        function fetchFeedback() {
-            const feedbackContainer = document.getElementById("feedback");
-            feedbackContainer.innerHTML = "<p>Loading feedback...</p>";
-            fetch("https://umakmdo-91b845374d5b.herokuapp.com/feedback/fetch_feedback.php") // Replace with your server URL
-                .then(response => response.json())
-                .then(data => {
-                    console.log("Feedback data received:", data); // Debugging the response
-                    // Ensure data.success is true and data.feedback is an array
-                    if (data.success && Array.isArray(data.feedback) && data.feedback.length > 0) {
-                        feedbackContainer.innerHTML = ""; // Clear previous content
-                        data.feedback.forEach(item => {
-                            console.log("Rendering feedback item:", item); // Debugging each feedback item
-                            const feedbackCard = `
-                                <div class="feedback-container">
-                                    <div class="feedback-card">
-                                        <div class="feedback-header">
-                                            <div class="feedback-title">
-                                                <strong>${item.name || "Anonymous"}</strong>
-                                            </div>
-                                            <div class="feedback-meta">
-                                                ${item.service_type || "General Service"}<br>${new Date(item.created_at).toLocaleString()}
-                                            </div>
-                                        </div>
-                                        <div class="feedback-rating">
-                                            ${"★".repeat(parseInt(item.rating))}${"☆".repeat(5 - parseInt(item.rating))}
-                                        </div>
-                                        <div class="feedback-message">
-                                            ${item.message || "No feedback provided."}
-                                        </div>
+    fetchFeedback();
+});
+
+function fetchFeedback() {
+    const feedbackContainer = document.getElementById("feedback");
+    feedbackContainer.innerHTML = "<p>Loading feedback...</p>";
+    fetch("https://umakmdo-91b845374d5b.herokuapp.com/feedback/fetch_feedback.php") // Replace with your server URL
+        .then(response => response.json())
+        .then(data => {
+            console.log("Feedback data received:", data); // Debugging the response
+            // Ensure data.success is true and data.feedback is an array
+            if (data.success && Array.isArray(data.feedback) && data.feedback.length > 0) {
+                feedbackContainer.innerHTML = ""; // Clear previous content
+                data.feedback.forEach(item => {
+                    console.log("Rendering feedback item:", item); // Debugging each feedback item
+                    
+                    // Format the created_at timestamp
+                    const date = new Date(item.created_at);
+                    const options = { year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true };
+                    const formattedDate = date.toLocaleString('en-US', options);
+
+                    const feedbackCard = `
+                        <div class="feedback-container">
+                            <div class="feedback-card">
+                                <div class="feedback-header">
+                                    <div class="feedback-title">
+                                        <strong>${item.name || "Anonymous"}</strong>
+                                    </div>
+                                    <div class="feedback-meta">
+                                        ${item.service_type || "General Service"}<br>${formattedDate}
                                     </div>
                                 </div>
-                            `;
-                            feedbackContainer.innerHTML += feedbackCard;
-                        });
-                    } else {
-                        feedbackContainer.innerHTML = "<p>No feedback available.</p>";
-                    }
-                })
-                .catch(error => {
-                    console.error("Error fetching feedback:", error);
-                    feedbackContainer.innerHTML = "<p>Failed to load feedback. Please try again later.</p>";
+                                <div class="feedback-rating">
+                                    ${"★".repeat(parseInt(item.rating))}${"☆".repeat(5 - parseInt(item.rating))}
+                                </div>
+                                <div class="feedback-message">
+                                    ${item.message || "No feedback provided."}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    feedbackContainer.innerHTML += feedbackCard;
                 });
-        }
+            } else {
+                feedbackContainer.innerHTML = "<p>No feedback available.</p>";
+            }
+        })
+        .catch(error => {
+            console.error("Error fetching feedback:", error);
+            feedbackContainer.innerHTML = "<p>Failed to load feedback. Please try again later.</p>";
+        });
+}
 
     </script>
 </body>
