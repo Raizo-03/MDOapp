@@ -17,7 +17,7 @@ if ($conn->connect_error) {
 }
 // Fetch feedback
 $sql = "SELECT id, user_email, booking_id, name, service, service_type, rating, message, created_at 
-        FROM feedback 
+        FROM Feedback 
         ORDER BY created_at DESC";
 $result = $conn->query($sql);
 // Check if there are results
