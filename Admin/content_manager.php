@@ -237,13 +237,22 @@ if ($conn->connect_error) {
         }
 
         /* Feedback Section */
+
+        .feedback-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            padding: 20px;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
         .feedback-card {
             background-color: white;
             border-radius: 10px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 300px; /* Adjust the size of the card */
             padding: 15px;
-            max-width: 400px;
-            margin: 0 auto;
             text-align: left;
         }
 
@@ -251,29 +260,33 @@ if ($conn->connect_error) {
             display: flex;
             flex-direction: column;
             margin-bottom: 10px;
+            margin-bottom: 15px;  /* Increased margin for better spacing */ 
         }
 
         .feedback-title {
-            font-size: 16px;
+            font-size: 18px;  /* Larger font for better visibility */
             color: #0A1128;
+            font-weight: bold;  /* Bold title for emphasis */
         }
 
         .feedback-meta {
-            font-size: 12px;
+            font-size: 14px;
             color: #555;
-            margin-top: 4px;
+            margin-top: 6px;
+            font-style: italic;
         }
 
         .feedback-rating {
-            font-size: 18px;
+                font-size: 20px;  /* Larger rating for more impact */
             color: #FFC107;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
         }
 
         .feedback-message {
-            font-size: 14px;
+            font-size: 16px;  /* Increased font size for readability */
             color: #333;
-            line-height: 1.5;
+            line-height: 1.6;  /* Better line spacing for readability */
+            margin-bottom: 10px;
         }
        
         /* Announcement Section */
@@ -650,6 +663,7 @@ if ($conn->connect_error) {
 
     <div id="feedback" class="tab-content">
     <div style="padding: 20px; text-align: center; height: 100%;">
+    <div class="feedback-container">
         <div class="feedback-card">
             <div class="feedback-header">
                 <div class="feedback-title">
@@ -667,27 +681,6 @@ if ($conn->connect_error) {
             </div>
         </div>
     </div>
-    </div>
-
-    <div id="feedback" class="tab-content">
-        <div style="padding: 20px; text-align: center; height: 100%;">
-            <div class="feedback-card">
-                <div class="feedback-header">
-                    <div class="feedback-title">
-                        <strong>Sara Jean</strong>
-                    </div>
-                    <div class="feedback-meta">
-                        General consultation<br>Oct 16, 2:00 PM
-                    </div>
-                </div>
-                <div class="feedback-rating">
-                    ★★★★☆
-                </div>
-                <div class="feedback-message">
-                    Good service! The staff were nice.
-                </div>
-            </div>
-        </div>
     </div>
 
     <div id="announcements" class="tab-content">
@@ -1385,6 +1378,54 @@ function sendMessageToUser(userEmail, messageText) {
             alert("Please fill in both title and details.");
         }
     });
+
+    document.addEventListener("DOMContentLoaded", function () {
+            fetchFeedback();
+        });
+        function fetchFeedback() {
+            const feedbackContainer = document.getElementById("feedback");
+            feedbackContainer.innerHTML = "<p>Loading feedback...</p>";
+            fetch("https://umakmdo-91b845374d5b.herokuapp.com/feedback/fetch_feedback.php") // Replace with your server URL
+                .then(response => response.json())
+                .then(data => {
+                    console.log("Feedback data received:", data); // Debugging the response
+                    // Ensure data.success is true and data.feedback is an array
+                    if (data.success && Array.isArray(data.feedback) && data.feedback.length > 0) {
+                        feedbackContainer.innerHTML = ""; // Clear previous content
+                        data.feedback.forEach(item => {
+                            console.log("Rendering feedback item:", item); // Debugging each feedback item
+                            const feedbackCard = `
+                                <div class="feedback-container">
+                                    <div class="feedback-card">
+                                        <div class="feedback-header">
+                                            <div class="feedback-title">
+                                                <strong>${item.name || "Anonymous"}</strong>
+                                            </div>
+                                            <div class="feedback-meta">
+                                                ${item.service_type || "General Service"}<br>${new Date(item.created_at).toLocaleString()}
+                                            </div>
+                                        </div>
+                                        <div class="feedback-rating">
+                                            ${"★".repeat(parseInt(item.rating))}${"☆".repeat(5 - parseInt(item.rating))}
+                                        </div>
+                                        <div class="feedback-message">
+                                            ${item.message || "No feedback provided."}
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                            feedbackContainer.innerHTML += feedbackCard;
+                        });
+                    } else {
+                        feedbackContainer.innerHTML = "<p>No feedback available.</p>";
+                    }
+                })
+                .catch(error => {
+                    console.error("Error fetching feedback:", error);
+                    feedbackContainer.innerHTML = "<p>Failed to load feedback. Please try again later.</p>";
+                });
+        }
+
     </script>
 </body>
 </html>

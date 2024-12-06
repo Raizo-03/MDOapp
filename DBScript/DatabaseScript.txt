@@ -73,7 +73,20 @@ CREATE TABLE IF NOT EXISTS Notes (
     FOREIGN KEY (umak_email) REFERENCES Users(umak_email)
 );
 
-
+CREATE TABLE Feedback (
+    id INT AUTO_INCREMENT PRIMARY KEY,                       -- Unique feedback ID
+    user_email VARCHAR(100) NOT NULL,                         -- User's email (foreign key to users)
+    booking_id INT NOT NULL,                                  -- Booking ID (foreign key to bookings)
+    name VARCHAR(100) NOT NULL,                               -- Name of the user providing feedback
+    service VARCHAR(100) NOT NULL,                            -- Service feedback is related to
+    service_type VARCHAR(100) NOT NULL,                       -- Type of service
+    rating INT NOT NULL,                                      -- Rating given by the user (1-5)
+    message TEXT NOT NULL,                                    -- Feedback message
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,           -- Timestamp of when feedback was created
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, -- Timestamp for updates
+    FOREIGN KEY (user_email) REFERENCES Users(umak_email) ON DELETE CASCADE,  -- Foreign key to users
+    FOREIGN KEY (booking_id) REFERENCES Bookings(booking_id) ON DELETE CASCADE -- Foreign key to bookings
+);
 
 
 
