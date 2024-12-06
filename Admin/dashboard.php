@@ -130,24 +130,27 @@ if ($resultUnreadMessages = $conn->query($SqlUnreadMessages)) {
             gap: 20px;
         }
         .chart-container {
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-            margin-top: 20px;
-            margin-bottom:30px;
-        }
-        .chart-placeholder {
-            height: 280px;
-            background-color: #e0e0e0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #777;
-            font-size: 18px;
-            border-radius: 8px;
-            margin-top:10px
-        }
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin: 20px auto;
+    max-width: 900px;
+}
+
+.chart-placeholder {
+    max-width: 800px;
+    height: 400px;
+    margin: 0 auto;
+    background-color: #e0e0e0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #777;
+    font-size: 18px;
+    border-radius: 8px;
+}
+
         a {
             text-decoration: none;
             color: #1E3A8A;
