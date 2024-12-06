@@ -170,10 +170,8 @@ if ($resultUnreadMessages = $conn->query($SqlUnreadMessages)) {
             right: 20px; /* Distance from the right */
             z-index: 10; /* Ensures it stays on top */
         }
-        
     </style>
-        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <!-- Header -->
@@ -265,6 +263,7 @@ if ($resultUnreadMessages = $conn->query($SqlUnreadMessages)) {
                 <canvas id="completedChart"></canvas>
             </div>
         </div>
+
         <div class="grid">
             <div class="card">
                 <h3>Announcements</h3>
@@ -284,6 +283,7 @@ if ($resultUnreadMessages = $conn->query($SqlUnreadMessages)) {
         const yearSelect = document.getElementById("yearSelect");
         const ctx = document.getElementById("completedChart").getContext("2d");
         let chart; // Store the Chart.js instance
+
         // Fetch data from the backend
         fetch('fetch_chart_data.php?chart_data=true')
             .then(response => response.json())
@@ -301,6 +301,7 @@ if ($resultUnreadMessages = $conn->query($SqlUnreadMessages)) {
                     // Ensure we add up all values for the same year/month/service_type combination
                     groupedData[service_type][year][month - 1] += total;
                 });
+
                 // Populate the year dropdown
                 const years = [...new Set(data.map(item => item.year))];
                 years.forEach(year => {
@@ -309,20 +310,25 @@ if ($resultUnreadMessages = $conn->query($SqlUnreadMessages)) {
                     option.textContent = year;
                     yearSelect.appendChild(option);
                 });
+
                 // Initial chart render for "All Years"
                 renderChart(groupedData, "all");
+
                 // Handle year selection
                 yearSelect.addEventListener("change", (e) => {
                     renderChart(groupedData, e.target.value);
                 });
             })
             .catch(error => console.error("Error fetching chart data:", error));
+
             function renderChart(groupedData, selectedYear) {
             const months = [
                 "January", "February", "March", "April", "May", "June",
                 "July", "August", "September", "October", "November", "December"
             ];
+
             const datasets = [];
+
             // Create a dataset for each service type
             Object.keys(groupedData).forEach(serviceType => {
                 let values = selectedYear === "all"
@@ -332,8 +338,10 @@ if ($resultUnreadMessages = $conn->query($SqlUnreadMessages)) {
                         }, 0);
                     })
                     : (groupedData[serviceType][selectedYear] || Array(12).fill(0));
+
                 // Filter values to include only whole numbers (1, 2, 3, ...) but retain continuity for the line
                 values = values.map(value => (Number.isInteger(value) && value > 0 ? value : 0));
+
                 datasets.push({
                     label: serviceType,
                     data: values,
@@ -344,8 +352,10 @@ if ($resultUnreadMessages = $conn->query($SqlUnreadMessages)) {
                     pointBackgroundColor: "rgba(75, 192, 192, 1)"
                 });
             });
+
             // Destroy existing chart instance if it exists
             if (chart) chart.destroy();
+
             // Create a new line chart
             chart = new Chart(ctx, {
                 type: "line",
@@ -379,6 +389,7 @@ if ($resultUnreadMessages = $conn->query($SqlUnreadMessages)) {
                 }
             });
         }
+
         // Utility function to generate random colors for the lines
         function getRandomColor() {
             const r = Math.floor(Math.random() * 255);
@@ -388,5 +399,4 @@ if ($resultUnreadMessages = $conn->query($SqlUnreadMessages)) {
         }
     });
 </script>
-</html>
 </html>
