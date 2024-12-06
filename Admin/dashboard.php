@@ -255,7 +255,6 @@ if ($resultUnreadMessages = $conn->query($SqlUnreadMessages)) {
 
         <div class="chart-container">
             <h3>Yearly Statistics</h3>
-            <div class="chart-placeholder">[Graph Placeholder]</div>
             <div id ="year-container">
                 <label for="yearSelect">Select Year:</label>
                 <select id="yearSelect">
