@@ -88,5 +88,14 @@ CREATE TABLE Feedback (
     FOREIGN KEY (booking_id) REFERENCES Bookings(booking_id) ON DELETE CASCADE -- Foreign key to bookings
 );
 
+-- Remove the `updated_at` column
+ALTER TABLE Feedback
+DROP COLUMN updated_at;
+
+-- Modify the `created_at` column to remove the default value
+ALTER TABLE Feedback
+MODIFY created_at TIMESTAMP NOT NULL;
+
+
 
 
