@@ -138,7 +138,7 @@ if ($resultUnreadMessages = $conn->query($SqlUnreadMessages)) {
             margin-bottom:30px;
         }
         .chart-placeholder {
-            height: 300px;
+            height: 280px;
             background-color: #e0e0e0;
             display: flex;
             align-items: center;
@@ -146,6 +146,7 @@ if ($resultUnreadMessages = $conn->query($SqlUnreadMessages)) {
             color: #777;
             font-size: 18px;
             border-radius: 8px;
+            margin-top:10px
         }
         a {
             text-decoration: none;
@@ -170,6 +171,7 @@ if ($resultUnreadMessages = $conn->query($SqlUnreadMessages)) {
             z-index: 10; /* Ensures it stays on top */
         }
     </style>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <!-- Header -->
@@ -251,7 +253,15 @@ if ($resultUnreadMessages = $conn->query($SqlUnreadMessages)) {
 
         <div class="chart-container">
             <h3>Yearly Statistics</h3>
-            <div class="chart-placeholder">[Graph Placeholder]</div>
+            <div id ="year-container">
+                <label for="yearSelect">Select Year:</label>
+                <select id="yearSelect">
+                    <option value="all">All Years</option> <!-- Default "All Years" option -->
+                </select>
+            </div>
+            <div class="chart-placeholder">
+                <canvas id="completedChart"></canvas>
+            </div>
         </div>
 
         <div class="grid">
@@ -268,4 +278,113 @@ if ($resultUnreadMessages = $conn->query($SqlUnreadMessages)) {
             <a href="logout.php" class="back-link">Logout</a>
         </div>
 </body>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const yearSelect = document.getElementById("yearSelect");
+        const ctx = document.getElementById("completedChart").getContext("2d");
+        let chart; // Store the Chart.js instance
+        // Fetch data from the backend
+        fetch('fetch_chart_data.php?chart_data=true')
+            .then(response => response.json())
+            .then(data => {
+                // Group data by year, month, and service type
+                const groupedData = {};
+                data.forEach(item => {
+                    const { year, month, service_type, total } = item;
+                    if (!groupedData[service_type]) {
+                        groupedData[service_type] = {};
+                    }
+                    if (!groupedData[service_type][year]) {
+                        groupedData[service_type][year] = Array(12).fill(0);
+                    }
+                    // Ensure we add up all values for the same year/month/service_type combination
+                    groupedData[service_type][year][month - 1] += total;
+                });
+                // Populate the year dropdown
+                const years = [...new Set(data.map(item => item.year))];
+                years.forEach(year => {
+                    const option = document.createElement("option");
+                    option.value = year;
+                    option.textContent = year;
+                    yearSelect.appendChild(option);
+                });
+                // Initial chart render for "All Years"
+                renderChart(groupedData, "all");
+                // Handle year selection
+                yearSelect.addEventListener("change", (e) => {
+                    renderChart(groupedData, e.target.value);
+                });
+            })
+            .catch(error => console.error("Error fetching chart data:", error));
+            function renderChart(groupedData, selectedYear) {
+            const months = [
+                "January", "February", "March", "April", "May", "June",
+                "July", "August", "September", "October", "November", "December"
+            ];
+            const datasets = [];
+            // Create a dataset for each service type
+            Object.keys(groupedData).forEach(serviceType => {
+                let values = selectedYear === "all"
+                    ? Array(12).fill(0).map((_, i) => {
+                        return Object.keys(groupedData[serviceType]).reduce((sum, year) => {
+                            return sum + (groupedData[serviceType][year][i] || 0);
+                        }, 0);
+                    })
+                    : (groupedData[serviceType][selectedYear] || Array(12).fill(0));
+                // Filter values to include only whole numbers (1, 2, 3, ...) but retain continuity for the line
+                values = values.map(value => (Number.isInteger(value) && value > 0 ? value : 0));
+                datasets.push({
+                    label: serviceType,
+                    data: values,
+                    borderColor: getRandomColor(),
+                    backgroundColor: "rgba(0, 0, 0, 0)", // Transparent background for lines
+                    borderWidth: 2,
+                    tension: 0.4,
+                    pointBackgroundColor: "rgba(75, 192, 192, 1)"
+                });
+            });
+            // Destroy existing chart instance if it exists
+            if (chart) chart.destroy();
+            // Create a new line chart
+            chart = new Chart(ctx, {
+                type: "line",
+                data: {
+                    labels: months,
+                    datasets: datasets
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { display: true },
+                        tooltip: {
+                            callbacks: {
+                                label: function (tooltipItem) {
+                                    return `${tooltipItem.dataset.label}: ${tooltipItem.raw}`; // Ensure whole numbers
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1, // Ensure y-axis increments by 1
+                                callback: function(value) {
+                                    return value; // Show all whole numbers (1, 2, 3, ...)
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        // Utility function to generate random colors for the lines
+        function getRandomColor() {
+            const r = Math.floor(Math.random() * 255);
+            const g = Math.floor(Math.random() * 255);
+            const b = Math.floor(Math.random() * 255);
+            return `rgba(${r}, ${g}, ${b}, 1)`;
+        }
+    });
+</script>
 </html>
