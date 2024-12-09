@@ -9,9 +9,15 @@ $jawsdb_db = substr($jawsdb_url["path"], 1); // Remove the leading '/' from the 
 // Create connection to JawsDB
 $conn = new mysqli($jawsdb_server, $jawsdb_username, $jawsdb_password, $jawsdb_db);
 
-// Check connection
+// Test connection
 if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
+    die("Database connection failed: " . $conn->connect_error);
+} else {
+    // Optional: Add this block temporarily for debugging.
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        echo "Database connection successful!";
+        exit; // Prevent further execution for test
+    }
 }
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
