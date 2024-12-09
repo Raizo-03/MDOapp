@@ -30,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $stmt->fetch();
 
         // Check if the account status is "Active"
-        if ($status === 'Inactive') {
+        if ($status === 'inactive') {
             echo "Your account is inactive.";
         } else {
             // Verify the password using password_verify function
