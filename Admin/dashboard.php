@@ -220,7 +220,7 @@ if ($resultUnreadMessages = $conn->query($SqlUnreadMessages)) {
     <!-- Content Section -->
     <div class="content">
         <div class="grid">
-            <a href="user_management.php?tab=inactive#active">
+            <a href="user_management.php?tab=active#active">
             <div class="card">
                 <h3>Active Users</h3>
                 <p><?php echo $activeUsers; ?></p>
