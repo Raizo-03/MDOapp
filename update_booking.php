@@ -41,11 +41,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $mail = new PHPMailer(true);
             try {
                 $mail->isSMTP();
-                $mail->Host = 'smtp.gmail.com';
-                $mail->SMTPAuth = true;
-                $mail->Username = 'ebuscato.k12043456@umak.edu.ph'; // Replace with your email
-                $mail->Password = 'xuke uebp cnyk qfsw'; // Replace with your app password
-                $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+                $mail->Host = 'smtp.gmail.com'; 
+                $mail->SMTPAuth = true; 
+                $mail->Username = 'umakmdo@gmail.com'; 
+                $mail->Password = 'jhdp unfj togy qbxf'; 
+                $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS; 
                 $mail->Port = 587;
 
                 // Disable SSL verification (for testing only)

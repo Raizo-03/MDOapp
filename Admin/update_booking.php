@@ -87,11 +87,11 @@ if (isset($data['id']) && isset($data['action'])) {
         $mail = new PHPMailer(true);
         try {
             $mail->isSMTP();
-            $mail->Host = 'smtp.gmail.com';
-            $mail->SMTPAuth = true;
-            $mail->Username = 'ebuscato.k12043456@umak.edu.ph'; // Your email address
-            $mail->Password = 'xuke uebp cnyk qfsw'; // Your email password (consider using app-specific password)
-            $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+            $mail->Host = 'smtp.gmail.com'; 
+            $mail->SMTPAuth = true; 
+            $mail->Username = 'umakmdo@gmail.com'; 
+            $mail->Password = 'jhdp unfj togy qbxf'; 
+            $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS; 
             $mail->Port = 587;
 
             $mail->SMTPOptions = array(

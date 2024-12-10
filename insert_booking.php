@@ -66,10 +66,10 @@ if ($stmt->execute()) {
         $mail->isSMTP(); 
         $mail->Host = 'smtp.gmail.com'; 
         $mail->SMTPAuth = true; 
-        $mail->Username = 'ebuscato.k12043456@umak.edu.ph'; 
-        $mail->Password = 'xuke uebp cnyk qfsw'; 
+        $mail->Username = 'umakmdo@gmail.com'; 
+        $mail->Password = 'jhdp unfj togy qbxf'; 
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS; 
-        $mail->Port = 587; 
+        $mail->Port = 587;
         
         // Disable SSL verification (only for testing)
         $mail->SMTPOptions = array(
