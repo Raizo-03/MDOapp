@@ -2,9 +2,9 @@
 // Include the database connection file
 include('db.php'); // This includes the JawsDB connection from db.php
 
-// Get umak_email from the request
-if (isset($_POST['umak_email'])) {
-    $umak_email = $_POST['umak_email'];
+// Get umak_email from the GET request
+if (isset($_GET['umak_email'])) {
+    $umak_email = $_GET['umak_email'];
 
     // Query to check if umak_email exists in UserProfile and fetch additional fields
     $query = "SELECT contact_number, address, guardian_contact_number, guardian_address FROM UserProfile WHERE umak_email = ?";
