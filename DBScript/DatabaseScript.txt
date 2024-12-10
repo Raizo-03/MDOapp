@@ -34,6 +34,14 @@ CREATE TABLE UserProfile (
     FOREIGN KEY (user_id) REFERENCES Users(user_id)
 );
 
+-- Add the umak_email column and set it as a foreign key referencing Users(umak_email)
+ALTER TABLE UserProfile
+ADD COLUMN umak_email VARCHAR(100),
+ADD CONSTRAINT fk_umak_email FOREIGN KEY (umak_email) REFERENCES Users(umak_email);
+
+-- Modify the profile_image column to BLOB
+ALTER TABLE UserProfile
+MODIFY COLUMN profile_image BLOB;
 
 INSERT INTO Admins (username, email, password) VALUES
 ('admin1', 'admin1@example.com', '123');
