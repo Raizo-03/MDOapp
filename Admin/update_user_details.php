@@ -97,14 +97,14 @@ if ($data) {
         // Send email notification using PHPMailer
         $mail = new PHPMailer(true);
         try {
-            $mail->isSMTP(); 
+            $mail->isSMTP();
             $mail->Host = 'smtp.gmail.com'; 
             $mail->SMTPAuth = true; 
             $mail->Username = 'umakmdo@gmail.com'; 
             $mail->Password = 'jhdp unfj togy qbxf'; 
             $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS; 
             $mail->Port = 587;
-            
+
             // Disable SSL verification (only for testing)
             $mail->SMTPOptions = array(
                 'ssl' => array(
