@@ -1,64 +1,55 @@
 <?php
-// Include database connection
-require 'db.php';
+// Include the database connection file
+include('db.php'); // This includes the JawsDB connection from db.php
 
-// Check if the request method is POST
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Get operation type (insert or update)
-    $operation = $_POST['operation'] ?? '';
+// Get POST data
+if (isset($_POST['umak_email']) && isset($_POST['contact_number']) && isset($_POST['address']) && isset($_POST['guardian_contact_number']) && isset($_POST['guardian_address'])) {
+    $umak_email = $_POST['umak_email'];
+    $contact_number = $_POST['contact_number'];
+    $address = $_POST['address'];
+    $guardian_contact_number = $_POST['guardian_contact_number'];
+    $guardian_address = $_POST['guardian_address'];
+    $operation = $_POST['operation']; // Operation could be "insert" or "update"
+    
+    if ($operation == "update") {
+        // Update existing profile
+        $query = "UPDATE UserProfile SET contact_number = ?, address = ?, guardian_contact_number = ?, guardian_address = ? WHERE umak_email = ?";
+        if ($stmt = mysqli_prepare($conn, $query)) {
+            mysqli_stmt_bind_param($stmt, "sssss", $contact_number, $address, $guardian_contact_number, $guardian_address, $umak_email);
+            $result = mysqli_stmt_execute($stmt);
 
-    // Retrieve the input values
-    $umak_email = $_POST['umak_email'] ?? null;
-    $contact_number = $_POST['contact_number'] ?? null;
-    $address = $_POST['address'] ?? null;
-    $guardian_contact_number = $_POST['guardian_contact_number'] ?? null;
-    $guardian_address = $_POST['guardian_address'] ?? null;
-
-    // Validate required fields
-    if (!$umak_email) {
-        echo json_encode(['success' => false, 'message' => 'umak_email is required']);
-        exit;
-    }
-
-    // Choose the operation
-    if ($operation === 'insert') {
-        // Insert values into UserProfile
-        $query = "INSERT INTO UserProfile (umak_email, contact_number, address, guardian_contact_number, guardian_address)
-                  VALUES (?, ?, ?, ?, ?);";
-
-        $stmt = $conn->prepare($query);
-        $stmt->bind_param('sssss', $umak_email, $contact_number, $address, $guardian_contact_number, $guardian_address);
-
-        if ($stmt->execute()) {
-            echo json_encode(['success' => true, 'message' => 'Record inserted successfully']);
-        } else {
-            echo json_encode(['success' => false, 'message' => 'Failed to insert record: ' . $stmt->error]);
-        }
-    } elseif ($operation === 'update') {
-        // Update values in UserProfile
-        $query = "UPDATE UserProfile SET contact_number = ?, address = ?, guardian_contact_number = ?, guardian_address = ?
-                  WHERE umak_email = ?;";
-
-        $stmt = $conn->prepare($query);
-        $stmt->bind_param('sssss', $contact_number, $address, $guardian_contact_number, $guardian_address, $umak_email);
-
-        if ($stmt->execute()) {
-            if ($stmt->affected_rows > 0) {
-                echo json_encode(['success' => true, 'message' => 'Record updated successfully']);
+            if ($result) {
+                echo json_encode(["success" => true, "message" => "Profile updated successfully"]);
             } else {
-                echo json_encode(['success' => false, 'message' => 'No matching record found to update']);
+                echo json_encode(["success" => false, "message" => "Failed to update profile"]);
             }
+            mysqli_stmt_close($stmt);
         } else {
-            echo json_encode(['success' => false, 'message' => 'Failed to update record: ' . $stmt->error]);
+            echo json_encode(["success" => false, "message" => "Failed to prepare the SQL statement"]);
+        }
+    } else if ($operation == "insert") {
+        // Insert new profile
+        $query = "INSERT INTO UserProfile (umak_email, contact_number, address, guardian_contact_number, guardian_address) VALUES (?, ?, ?, ?, ?)";
+        if ($stmt = mysqli_prepare($conn, $query)) {
+            mysqli_stmt_bind_param($stmt, "sssss", $umak_email, $contact_number, $address, $guardian_contact_number, $guardian_address);
+            $result = mysqli_stmt_execute($stmt);
+
+            if ($result) {
+                echo json_encode(["success" => true, "message" => "Profile created successfully"]);
+            } else {
+                echo json_encode(["success" => false, "message" => "Failed to create profile"]);
+            }
+            mysqli_stmt_close($stmt);
+        } else {
+            echo json_encode(["success" => false, "message" => "Failed to prepare the SQL statement"]);
         }
     } else {
-        echo json_encode(['success' => false, 'message' => 'Invalid operation']);
+        echo json_encode(["success" => false, "message" => "Invalid operation"]);
     }
-
-    $stmt->close();
 } else {
-    echo json_encode(['success' => false, 'message' => 'Invalid request method']);
+    echo json_encode(["success" => false, "message" => "Missing required fields"]);
 }
 
-$conn->close();
+// Close the database connection
+mysqli_close($conn);
 ?>
