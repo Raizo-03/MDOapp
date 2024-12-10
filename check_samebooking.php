@@ -1,6 +1,4 @@
 <?php
-// Database connection
-header("Content-Type: application/json");
 
 $jawsdb_url = parse_url(getenv("JAWSDB_URL")); // Use the JAWSDB_URL environment variable
 $jawsdb_server = $jawsdb_url["host"];
