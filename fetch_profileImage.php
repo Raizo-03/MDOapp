@@ -8,13 +8,13 @@ $jawsdb_db = substr($jawsdb_url["path"], 1);
 $conn = mysqli_connect($jawsdb_server, $jawsdb_username, $jawsdb_password, $jawsdb_db);
 
 if (!$conn) {
-    die("Connection failed: " . mysqli_connect_error());
+    die(json_encode(["error" => "Connection failed: " . mysqli_connect_error()]));
 }
 
 $umak_email = $_GET['umak_email'] ?? '';
 
 if (empty($umak_email)) {
-    die("Email is required.");
+    die(json_encode(["error" => "Email is required."]));
 }
 
 // Fetch user_id for the given umak_email
@@ -29,7 +29,7 @@ if ($stmt_user->execute()) {
         $stmt_user->bind_result($user_id);
         $stmt_user->fetch();
 
-        // Now use the user_id to get the profile image from UserProfile
+        // Fetch the profile image
         $query = "SELECT profile_image FROM UserProfile WHERE user_id = ?";
         $stmt = $conn->prepare($query);
         $stmt->bind_param("i", $user_id);
@@ -41,24 +41,22 @@ if ($stmt_user->execute()) {
                 $stmt->bind_result($profile_image_blob);
                 $stmt->fetch();
 
-                // Output the image as binary
-                header("Content-Type: image/jpeg"); // Change to image/png if your image is PNG
-                echo $profile_image_blob;
+                // Return the image as a Base64-encoded string in JSON
+                $base64_image = base64_encode($profile_image_blob);
+                echo json_encode(["image" => $base64_image]);
             } else {
-                echo "No image found for this user.";
+                echo json_encode(["error" => "No image found for this user."]);
             }
         } else {
-            echo "Error fetching profile image: " . $stmt->error;
+            echo json_encode(["error" => "Error fetching profile image: " . $stmt->error]);
         }
-
         $stmt->close();
     } else {
-        echo "No user found with this email.";
+        echo json_encode(["error" => "No user found with this email."]);
     }
-
     $stmt_user->close();
 } else {
-    echo "Error fetching user ID: " . $stmt_user->error;
+    echo json_encode(["error" => "Error fetching user ID: " . $stmt_user->error]);
 }
 
 $conn->close();
