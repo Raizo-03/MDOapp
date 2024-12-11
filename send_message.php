@@ -13,17 +13,20 @@ if (!$conn) {
     die("Connection failed: " . mysqli_connect_error());
 }
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $sender_email = $_POST['sender_email'];  // User's email
-    $receiver_email = $_POST['receiver_email'];  // Admin's email
-    $message = $_POST['message_text'];  // Message content
-    $timestamp = $_POST['timestamp'];  // Timestamp from the user
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $sender_email = $_POST['sender_email'];
+    $receiver_email = $_POST['receiver_email'];
+    $message_text = $_POST['message_text'];
+    $timestamp = intval($_POST['timestamp']);  // Convert to integer to ensure it's a valid timestamp
+    
+    // Convert Unix timestamp to MySQL DATETIME format
+    $formattedTimestamp = date('Y-m-d H:i:s', $timestamp);
 
-    // Update SQL query to include the timestamp
-    $sql = "INSERT INTO Messages (sender_email, receiver_email, message, timestamp) 
-            VALUES ('$sender_email', '$receiver_email', '$message', '$timestamp')";
+    // Then insert into the database
+    $query = "INSERT INTO Messages (sender_email, receiver_email, message, timestamp) 
+              VALUES ('$sender_email', '$receiver_email', '$message_text', '$formattedTimestamp')";
 
-    if (mysqli_query($conn, $sql)) {
+    if (mysqli_query($conn, $query)) {
         echo "Message sent successfully.";
     } else {
         echo "Error: " . mysqli_error($conn);
