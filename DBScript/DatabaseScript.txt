@@ -70,6 +70,10 @@ CREATE TABLE IF NOT EXISTS Messages (
     status ENUM('unread', 'read') DEFAULT 'unread' NOT NULL
 );
 
+ALTER TABLE Messages
+MODIFY COLUMN timestamp TIMESTAMP NOT NULL;
+
+
 CREATE TABLE IF NOT EXISTS Notes (
     note_id INT AUTO_INCREMENT PRIMARY KEY,
     umak_email VARCHAR(100) NOT NULL, -- Reference the umak_email field in Users table
