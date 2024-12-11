@@ -814,7 +814,6 @@ function saveUserData() {
         address: document.getElementById('editAddress').value,
         guardian_contact_number: document.getElementById('editGuardianContact').value,
         guardian_address: document.getElementById('editGuardianAddress').value,
-        profile_image: document.getElementById('editProfileImage').value
     };
 
     console.log('Data to be saved:', updatedData);  // Log data to the console

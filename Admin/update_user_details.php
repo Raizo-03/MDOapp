@@ -30,7 +30,6 @@ if ($data) {
     $address = $data['address']; // Can be null
     $guardian_contact_number = $data['guardian_contact_number']; // Can be null
     $guardian_address = $data['guardian_address']; // Can be null
-    $profile_image = $data['profile_image']; // Can be null
 
     // Check if required fields are empty (first_name, last_name, student_id)
     if (empty($first_name) || empty($last_name) || empty($student_id)) {
@@ -77,15 +76,14 @@ if ($data) {
         }
 
         // Update UserProfile table
-        $updateProfileQuery = "INSERT INTO UserProfile (user_id, contact_number, address, guardian_contact_number, guardian_address, profile_image)
+        $updateProfileQuery = "INSERT INTO UserProfile (user_id, contact_number, address, guardian_contact_number, guardian_address)
                                VALUES (?, ?, ?, ?, ?, ?)
                                ON DUPLICATE KEY UPDATE contact_number = VALUES(contact_number),
                                                        address = VALUES(address),
                                                        guardian_contact_number = VALUES(guardian_contact_number),
-                                                       guardian_address = VALUES(guardian_address),
-                                                       profile_image = VALUES(profile_image)";
+                                                       guardian_address = VALUES(guardian_address)";
         $stmt = $conn->prepare($updateProfileQuery);
-        $stmt->bind_param("isssss", $user_id, $contact_number, $address, $guardian_contact_number, $guardian_address, $profile_image);
+        $stmt->bind_param("isssss", $user_id, $contact_number, $address, $guardian_contact_number, $guardian_address);
 
         if (!$stmt->execute()) {
             throw new Exception('Error updating profile data: ' . $stmt->error);
