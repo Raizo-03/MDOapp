@@ -632,10 +632,6 @@ $resultInactive = $conn->query($sqlInactive);
                         <label>Guardian Address:</label>
                         <textarea id="editGuardianAddress" name="guardian_address"></textarea>
                     </div>
-                    <div>
-                        <label>Profile Image URL:</label>
-                        <input type="text" id="editProfileImage" name="profile_image">
-                    </div>
                     <div class="modal-buttons">
                         <button type="button" class="save-btn" onclick="saveUserData()">Save</button>
                         <button type="button" class="cancel-btn" onclick="closeEditModal()">Cancel</button>
@@ -786,8 +782,6 @@ document.addEventListener("DOMContentLoaded", () => {
             document.getElementById('editAddress').value = data.address || '';
             document.getElementById('editGuardianContact').value = data.guardian_contact_number || '';
             document.getElementById('editGuardianAddress').value = data.guardian_address || '';
-            document.getElementById('editProfileImage').value = data.profile_image || '';
-
             // Display the modal
             document.getElementById('editModal').style.display = 'block';
             document.getElementById('editModalBackdrop').style.display = 'block';
