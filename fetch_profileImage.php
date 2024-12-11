@@ -17,7 +17,10 @@ if (empty($umak_email)) {
     die("Email is required.");
 }
 
-$query = "SELECT profile_image FROM UserProfile WHERE umak_email = ?";
+$query_user = "SELECT user_id FROM Users WHERE umak_email = ?";
+
+
+$query = "SELECT profile_image FROM UserProfile WHERE user_id = ?";
 $stmt = $conn->prepare($query);
 $stmt->bind_param("s", $umak_email);
 
