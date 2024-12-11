@@ -75,18 +75,30 @@ if ($data) {
             throw new Exception('Error updating user data: ' . $stmt->error);
         }
 
-        // Update UserProfile table
-        $updateProfileQuery = "INSERT INTO UserProfile (user_id, contact_number, address, guardian_contact_number, guardian_address)
-                               VALUES (?, ?, ?, ?, ?, ?)
-                               ON DUPLICATE KEY UPDATE contact_number = VALUES(contact_number),
-                                                       address = VALUES(address),
-                                                       guardian_contact_number = VALUES(guardian_contact_number),
-                                                       guardian_address = VALUES(guardian_address)";
-        $stmt = $conn->prepare($updateProfileQuery);
-        $stmt->bind_param("isssss", $user_id, $contact_number, $address, $guardian_contact_number, $guardian_address);
+        // Check if user exists in UserProfile table
+        $checkProfileQuery = "SELECT COUNT(*) FROM UserProfile WHERE user_id = ?";
+        $stmt = $conn->prepare($checkProfileQuery);
+        $stmt->bind_param("i", $user_id);
+        $stmt->execute();
+        $stmt->bind_result($profileCount);
+        $stmt->fetch();
+        $stmt->close();
+
+        if ($profileCount > 0) {
+            // If user exists in UserProfile, update it
+            $updateProfileQuery = "UPDATE UserProfile SET contact_number = ?, address = ?, guardian_contact_number = ?, guardian_address = ? WHERE user_id = ?";
+            $stmt = $conn->prepare($updateProfileQuery);
+            $stmt->bind_param("ssssi", $contact_number, $address, $guardian_contact_number, $guardian_address, $user_id);
+        } else {
+            // If user does not exist in UserProfile, insert a new record
+            $insertProfileQuery = "INSERT INTO UserProfile (user_id, contact_number, address, guardian_contact_number, guardian_address)
+                                   VALUES (?, ?, ?, ?, ?)";
+            $stmt = $conn->prepare($insertProfileQuery);
+            $stmt->bind_param("issss", $user_id, $contact_number, $address, $guardian_contact_number, $guardian_address);
+        }
 
         if (!$stmt->execute()) {
-            throw new Exception('Error updating profile data: ' . $stmt->error);
+            throw new Exception('Error updating or inserting profile data: ' . $stmt->error);
         }
 
         // Commit transaction
