@@ -418,9 +418,8 @@ $resultNoShow = $conn->query($sq1234);
         <?php endif; ?>    
     </div>
 
-
     <!-- Confirmation Modal -->
-<div id="confirmation-modal" class="modal">
+    <div id="confirmation-modal" class="modal">
     <div class="modal-content">
         <div class="modal-header">
             Are you sure you want to update this booking?
@@ -577,7 +576,7 @@ $resultNoShow = $conn->query($sq1234);
                     }
                    
                 } else {
-                    alert('Failed to update booking.');
+                    alert(data.message);
                 }
             })
             .catch(error => {
