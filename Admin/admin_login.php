@@ -52,6 +52,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 }
 ?>
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -59,7 +60,90 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Login</title>
     <style>
-        /* ...Existing Styles... */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #111C4E;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+        .container {
+            display: flex;
+            width: 80%;
+            max-width: 1200px;
+            background-color: #111C4E;
+        }
+        .logo-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            color: white;
+        }
+        .logo-section img {
+            width: 400px;
+            height: auto;
+            margin-bottom: 20px;
+        }
+        .logo-section h3 {
+            margin: 10px 0;
+        }
+        .form-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 0px;
+        }
+        .login-form {
+        width: 100%;
+        max-width: 400px;
+        color: black;
+        padding: 30px;
+        border-radius: 10px;
+        text-align: center; /* Add this to center the button */
+        }
+        .login-form input[type="text"],
+        .login-form input[type="password"] {
+            width: 75%;
+            padding: 10px;
+            margin: 10px 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .login-form button {
+            width: 100px;
+            padding: 10px;
+            background-color: #fecb00;
+            color: #03194f;
+            font-weight: bold;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 20px auto; /* Adjust horizontal centering */
+            display: block; /* Ensure it's treated as a block element */
+        }
+        .login-form button:hover {
+            background-color: #e2b300;
+        }
+        .forgot-password {
+            text-align: center;
+            margin-top: 10px;
+        }
+        .forgot-password a {
+            color: #ccc;
+            text-decoration: none;
+        }
+        .forgot-password a:hover {
+            text-decoration: underline;
+        }
         .message {
             color: black;
             font-size: 14px;
