@@ -145,7 +145,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             text-decoration: underline;
         }
         .message {
-            color: black;
+            color: red;
             font-size: 14px;
             margin-bottom: 10px;
         }
@@ -162,11 +162,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <div class="login-form">
                 <form method="POST" action="admin_login.php">
                     <!-- Message Display -->
+                    <input type="text" name="username" placeholder="Enter username" required>
+                    <input type="password" name="password" placeholder="Enter password" required>
                     <?php if (!empty($message)): ?>
                         <div class="message"><?= htmlspecialchars($message) ?></div>
                     <?php endif; ?>
-                    <input type="text" name="username" placeholder="Enter username" required>
-                    <input type="password" name="password" placeholder="Enter password" required>
+
                     <button type="submit">LOG IN</button>
                 </form>
                 <div class="forgot-password">
