@@ -16,16 +16,16 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Handle POST request to add a new announcement
     $title = $_POST['title'] ?? '';
     $details = $_POST['details'] ?? '';
     $imageUrl = $_POST['image_url'] ?? ''; // Optional image URL
+    $status = $_POST['status'] ?? 'draft'; // Default status to draft
 
     if (!empty($title) && !empty($details)) {
-        $stmt = $conn->prepare("INSERT INTO Announcements (title, details, image_url) VALUES (?, ?, ?)");
-        $stmt->bind_param("sss", $title, $details, $imageUrl);
+        $stmt = $conn->prepare("INSERT INTO Announcements (title, details, image_url, status) VALUES (?, ?, ?, ?)");
+        $stmt->bind_param("ssss", $title, $details, $imageUrl, $status);
 
         if ($stmt->execute()) {
             $last_id = $conn->insert_id;  
@@ -47,11 +47,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $type = $_GET['type'] ?? 'all'; // Default to 'all' if no type is specified
 
     if ($type === 'latest') {
-        // Fetch the latest announcement (e.g., based on a timestamp or ID)
-        $sql = "SELECT id, title, details, image_url FROM Announcements ORDER BY id DESC LIMIT 1"; // Assuming `id` is auto-incremented
+        // Fetch the latest published announcement
+        $sql = "SELECT id, title, details, image_url FROM Announcements WHERE status = 'published' ORDER BY id DESC LIMIT 1";
     } else {
-        // Fetch all announcements
-        $sql = "SELECT id, title, details, image_url FROM Announcements";
+        // Fetch all published announcements
+        $sql = "SELECT id, title, details, image_url FROM Announcements WHERE status = 'published'";
     }
 
     $result = $conn->query($sql);
@@ -59,7 +59,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Check if the query was successful
     if ($result) {
         if ($type === 'latest') {
-            // Fetch the single latest announcement
+            // Fetch the single latest published announcement
             $announcement = $result->fetch_assoc();
             echo json_encode($announcement); // Return as an object
         } else {
@@ -75,8 +75,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         echo json_encode(['status' => 'error', 'message' => 'Failed to fetch announcements.']);
     }
 } elseif ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
-
-      // Read the raw POST data and decode JSON
+    // Read the raw POST data and decode JSON
     $data = json_decode(file_get_contents("php://input"), true); // true converts JSON to associative array
     $id = $data['id'] ?? 0; // Get the `id` to delete
 
@@ -96,7 +95,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         echo json_encode(['status' => 'error', 'message' => 'Invalid announcement ID.']);
     }
-}  else {
+} else {
     echo json_encode(['status' => 'error', 'message' => 'Invalid request method.']);
 }
 
