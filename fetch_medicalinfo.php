@@ -1,11 +1,12 @@
 <?php
-$jawsdb_url = parse_url(getenv("JAWSDB_URL"));
-$conn = mysqli_connect(
-    $jawsdb_url["host"],
-    $jawsdb_url["user"],
-    $jawsdb_url["pass"],
-    substr($jawsdb_url["path"], 1)
-);
+$jawsdb_url = parse_url(getenv("JAWSDB_URL")); // Use the JAWSDB_URL environment variable
+$jawsdb_server = $jawsdb_url["host"];
+$jawsdb_username = $jawsdb_url["user"];
+$jawsdb_password = $jawsdb_url["pass"];
+$jawsdb_db = substr($jawsdb_url["path"], 1); // Remove the leading '/' from the path
+
+// Connect to the database
+$conn = mysqli_connect($jawsdb_server, $jawsdb_username, $jawsdb_password, $jawsdb_db);
 
 if (isset($_GET['umak_email'])) {
     $umak_email = $_GET['umak_email'];
