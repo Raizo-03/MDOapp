@@ -18,7 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET['booking_id'])) {
     $response = array();
     
     // Fetch medical records
-    $query_medical = $conn->prepare("SELECT diagnosis, prescription, doctor, notes, doctor_id 
+    $query_medical = $conn->prepare("SELECT diagnosis, complaint, prescription, doctor, notes, doctor_id 
                                     FROM medical_records 
                                     WHERE booking_id = ?");
     $query_medical->bind_param("i", $booking_id);
