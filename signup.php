@@ -27,6 +27,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $first_name = $_POST['first_name'];
     $last_name = $_POST['last_name'];
     $password = password_hash($_POST['password'], PASSWORD_DEFAULT); // Hash the password
+    $role = isset($_POST['role']) ? $_POST['role'] : 'student'; // Default to student if not provided
+
+    // Validate role (security check)
+    if (!in_array($role, ['student', 'faculty'])) {
+        echo "Invalid role specified";
+        exit;
+    }
 
     // Check if student ID is already registered
     $checkIdStmt = $conn->prepare("SELECT * FROM Users WHERE student_id = ?");
@@ -48,9 +55,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             // Email already exists
             echo "Email already registered";
         } else {
-            // Neither student ID nor email exists, proceed with signup
-            $stmt = $conn->prepare("INSERT INTO Users (student_id, umak_email, first_name, last_name, password) VALUES (?, ?, ?, ?, ?)");
-            $stmt->bind_param("sssss", $student_id, $umak_email, $first_name, $last_name, $password);
+            // Neither student ID nor email exists, proceed with signup including role
+            $stmt = $conn->prepare("INSERT INTO Users (student_id, umak_email, first_name, last_name, password, role) VALUES (?, ?, ?, ?, ?, ?)");
+            $stmt->bind_param("ssssss", $student_id, $umak_email, $first_name, $last_name, $password, $role);
 
             if ($stmt->execute()) {
                 echo "Signup successful!";
