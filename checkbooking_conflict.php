@@ -4,12 +4,6 @@ header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: POST, GET, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type');
 
-// Include PHPMailer
-use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\Exception;
-
-require 'vendor/autoload.php'; // Include Composer's autoloader
-
 // Database connection
 $jawsdb_url = parse_url(getenv("JAWSDB_URL")); // Use the JAWSDB_URL environment variable
 $jawsdb_server = $jawsdb_url["host"];
@@ -73,7 +67,9 @@ function checkTimeSlotAvailability($conn, $date, $time, $newServiceDuration, $se
         $existingDuration = getServiceDuration($row['service_type'], $row['service'], $serviceDurations);
         $existingBookings[] = [
             'time' => $row['booking_time'],
-            'duration' => $existingDuration
+            'duration' => $existingDuration,
+            'service' => $row['service'],
+            'service_type' => $row['service_type']
         ];
     }
     
@@ -93,14 +89,18 @@ function checkTimeSlotAvailability($conn, $date, $time, $newServiceDuration, $se
                     return [
                         'available' => false,
                         'canBook30Min' => false,
-                        'message' => 'This time slot is already booked. Please choose another time.'
+                        'message' => 'This time slot is already booked. Please choose another time.',
+                        'conflictType' => 'EXACT_TIME_CONFLICT',
+                        'conflictingBookings' => $existingBookings
                     ];
                 } else {
                     // They can potentially fit in the same hour slot
                     return [
                         'available' => false,
                         'canBook30Min' => true,
-                        'message' => 'This hour slot is partially booked. You can still book a 30-minute service, but consider booking another time for better availability.'
+                        'message' => 'This hour slot is partially booked. You can still book a 30-minute service, but consider booking another time for better availability.',
+                        'conflictType' => 'PARTIAL_CONFLICT_30MIN',
+                        'conflictingBookings' => $existingBookings
                     ];
                 }
             } else {
@@ -108,7 +108,9 @@ function checkTimeSlotAvailability($conn, $date, $time, $newServiceDuration, $se
                 return [
                     'available' => false,
                     'canBook30Min' => false,
-                    'message' => 'This time slot is already booked with a 1-hour service. Please choose another time.'
+                    'message' => 'This time slot is already booked with a 1-hour service. Please choose another time.',
+                    'conflictType' => 'FULL_CONFLICT_60MIN',
+                    'conflictingBookings' => $existingBookings
                 ];
             }
         }
@@ -117,7 +119,9 @@ function checkTimeSlotAvailability($conn, $date, $time, $newServiceDuration, $se
     return [
         'available' => true,
         'canBook30Min' => true,
-        'message' => 'Time slot is available for booking.'
+        'message' => 'Time slot is available for booking.',
+        'conflictType' => 'NO_CONFLICT',
+        'conflictingBookings' => []
     ];
 }
 
@@ -144,7 +148,9 @@ switch ($action) {
             'available' => $availability['available'],
             'canBook30Min' => $availability['canBook30Min'],
             'message' => $availability['message'],
-            'service_duration' => $serviceDuration
+            'service_duration' => $serviceDuration,
+            'conflict_type' => $availability['conflictType'],
+            'conflicting_bookings' => $availability['conflictingBookings']
         ]);
         break;
         
@@ -168,7 +174,9 @@ switch ($action) {
                 'available_30min' => $availability30['available'] || $availability30['canBook30Min'],
                 'available_60min' => $availability60['available'],
                 'message_30min' => $availability30['message'],
-                'message_60min' => $availability60['message']
+                'message_60min' => $availability60['message'],
+                'conflict_type_30min' => $availability30['conflictType'],
+                'conflict_type_60min' => $availability60['conflictType']
             ];
         }
         
@@ -176,57 +184,6 @@ switch ($action) {
             'success' => true,
             'available_slots' => $availableSlots
         ]);
-        break;
-        
-    case 'create_booking':
-        $email = $_POST['email'] ?? '';
-        $service = $_POST['service'] ?? '';
-        $serviceType = $_POST['service_type'] ?? '';
-        $date = $_POST['date'] ?? '';
-        $time = $_POST['time'] ?? '';
-        $remarks = $_POST['remarks'] ?? '';
-        
-        if (empty($email) || empty($service) || empty($serviceType) || empty($date) || empty($time)) {
-            echo json_encode(['success' => false, 'message' => 'Missing required parameters']);
-            break;
-        }
-        
-        // Double-check availability before booking
-        $serviceDuration = getServiceDuration($serviceType, $service, $serviceDurations);
-        $availability = checkTimeSlotAvailability($conn, $date, $time, $serviceDuration, $serviceDurations);
-        
-        if (!$availability['available'] && !$availability['canBook30Min']) {
-            echo json_encode([
-                'success' => false, 
-                'message' => $availability['message']
-            ]);
-            break;
-        }
-        
-        // If it's a 60-minute service trying to book in a slot with 30-minute conflict
-        if ($serviceDuration == 60 && !$availability['available'] && $availability['canBook30Min']) {
-            echo json_encode([
-                'success' => false,
-                'message' => 'Cannot book 1-hour service in this slot. Please choose another time or select a 30-minute service.'
-            ]);
-            break;
-        }
-        
-        // Create the booking
-        $stmt = $conn->prepare("INSERT INTO bookings (umak_email, service, service_type, booking_date, booking_time, remarks, status) VALUES (?, ?, ?, ?, ?, ?, 'Pending')");
-        $stmt->bind_param("ssssss", $email, $serviceType, $service, $date, $time, $remarks);
-        
-        if ($stmt->execute()) {
-            $bookingId = $conn->insert_id;
-            echo json_encode([
-                'success' => true,
-                'message' => 'Booking created successfully',
-                'booking_id' => $bookingId,
-                'warning' => (!$availability['available']) ? $availability['message'] : null
-            ]);
-        } else {
-            echo json_encode(['success' => false, 'message' => 'Failed to create booking']);
-        }
         break;
         
     default:
