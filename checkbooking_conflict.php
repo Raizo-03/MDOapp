@@ -57,7 +57,7 @@ function convertTimeToMinutes($time) {
 
 function checkTimeSlotAvailability($conn, $date, $time, $newServiceDuration, $serviceDurations) {
     // Get all bookings for the specific date
-    $stmt = $conn->prepare("SELECT booking_time, service, service_type FROM bookings WHERE booking_date = ? AND status IN ('Pending', 'Approved')");
+    $stmt = $conn->prepare("SELECT booking_time, service, service_type FROM Bookings WHERE booking_date = ? AND status IN ('Pending', 'Approved')");
     $stmt->bind_param("s", $date);
     $stmt->execute();
     $result = $stmt->get_result();
