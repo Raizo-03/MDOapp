@@ -27,6 +27,7 @@ $service_type = $_POST['service_type'];
 $booking_date = $_POST['booking_date'];
 $booking_time = $_POST['booking_time'];
 $remarks = isset($_POST['remarks']) && $_POST['remarks'] !== "null" ? $_POST['remarks'] : NULL; // Handle remarks as null
+$status = "Approved"; // Set the status to "Approved"
 
 // Validate mandatory fields
 if (empty($umak_email) || empty($service) || empty($service_type) || empty($booking_date) || empty($booking_time)) {
@@ -51,12 +52,12 @@ if ($stmt->num_rows == 0) {
 
 $stmt->close(); // Close the prepared statement for user existence check
 
-// Prepare SQL statement for inserting the booking
-$sql = "INSERT INTO Bookings (umak_email, service, service_type, booking_date, booking_time, remarks)
-        VALUES (?, ?, ?, ?, ?, ?)";
+// Prepare SQL statement for inserting the booking with status
+$sql = "INSERT INTO Bookings (umak_email, service, service_type, booking_date, booking_time, remarks, status)
+        VALUES (?, ?, ?, ?, ?, ?, ?)";
 
 $stmt = $conn->prepare($sql);
-$stmt->bind_param("ssssss", $umak_email, $service, $service_type, $booking_date, $booking_time, $remarks);
+$stmt->bind_param("sssssss", $umak_email, $service, $service_type, $booking_date, $booking_time, $remarks, $status);
 
 if ($stmt->execute()) {
     // Email sending section
@@ -84,18 +85,19 @@ if ($stmt->execute()) {
         $mail->addAddress($umak_email); 
     
         $mail->isHTML(true);
-        $mail->Subject = 'Booking Confirmation';
-        $mail->Body = "Dear User,<br><br>Your booking for <strong>$service</strong> has been successfully confirmed.<br>
+        $mail->Subject = 'Booking Confirmation - APPROVED';
+        $mail->Body = "Dear User,<br><br>Your booking for <strong>$service</strong> has been successfully confirmed and <strong>APPROVED</strong>.<br>
                        Service Type: $service_type<br>
                        Booking Date: $booking_date<br>
-                       Booking Time: $booking_time<br><br>Remarks: " . ($remarks ? $remarks : 'N/A') . 
+                       Booking Time: $booking_time<br>
+                       Status: <strong>Approved</strong><br><br>Remarks: " . ($remarks ? $remarks : 'N/A') . 
                        "<br><br>Thank you for using our service.";
     
         $mail->send();
-        echo json_encode(["status" => "success", "message" => "Email sent successfully"]);
+        echo json_encode(["status" => "success", "message" => "Booking approved and email sent successfully"]);
     } catch (Exception $e) {
         error_log("Email sending failed: " . $mail->ErrorInfo);
-        echo json_encode(["status" => "error", "message" => "Booking inserted, but email could not be sent."]);
+        echo json_encode(["status" => "error", "message" => "Booking inserted with approved status, but email could not be sent."]);
     }
 
 } else {
